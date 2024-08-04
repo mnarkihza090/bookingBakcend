@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,6 +23,9 @@ public class User {
     private boolean isEnabled;
     private String password;
     private String confirmPassword;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<Review> reviews;
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     private VerificationToken verificationToken;

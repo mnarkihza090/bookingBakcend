@@ -1,5 +1,6 @@
 package com.example.travelapp.config;
 
+import com.example.travelapp.filters.JwtAuthenticationEntryPoint;
 import com.example.travelapp.filters.JwtRequestFilter;
 import com.example.travelapp.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,21 +29,19 @@ public class SecurityConfig {
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
+    @Autowired
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     private final String[] publicUrl = {
             "/",
-            "/api/**",
-            "/login",
-            "/login/**",
-            "/hotels",
-            "/hotels/**",
-            "/hotel-search/**",
-            "/register/**",
-            "/register",
-            "/auth/**",
-            "/src/**",
+            "/api/auth/login/",
+            "/api/auth/register",
             "/verify",
+            "/api/**",
+            "/src/**",
+            "/api/auth/verify",
             "/home",
+            "/verify",
             "/*.css",
             "/*.js",
             "/*.js.map",
@@ -60,38 +60,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(AbstractHttpConfigurer::disable);
+        http.cors(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(authenticationEntryPoint))
+                .sessionManagement(sessionManagement -> sessionManagement
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers(publicUrl).permitAll()
+                        .anyRequest().authenticated());
 
-        http.authorizeHttpRequests(auth ->
-            auth.requestMatchers(publicUrl)
-                    .permitAll()
-                    .anyRequest().authenticated()
-                );
+        http.formLogin(frm -> frm.loginPage("/api/auth/login"));
 
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http.formLogin(formLogin ->
-                        formLogin.loginPage("/login")
-                                .failureUrl("/login?error")
-                                .defaultSuccessUrl("/home", true)
-                                .permitAll())
-                .logout(logout ->
-                        logout.permitAll()
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/login?logout")
-                                .invalidateHttpSession(true)// Oturumun geçerliliğini sonlandır
-                                .deleteCookies("JSESSIONID"));
-
+        // Add our custom JWT security filter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    @Bean
+    /*@Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManager = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManager.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         return authenticationManager.build();
+    }*/
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean

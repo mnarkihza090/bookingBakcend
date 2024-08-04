@@ -11,6 +11,7 @@ import com.example.travelapp.service.EmailService;
 import com.example.travelapp.service.FileStorageService;
 import com.example.travelapp.service.UserService;
 import com.example.travelapp.utils.DTOConverter;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,8 @@ public class UserServiceImpl implements UserService {
     private DTOConverter dtoConverter;
     @Autowired
     private VerificationTokenRepository verificationTokenRepository;
-    //@Autowired
-    //private EmailService emailService;
+    @Autowired
+    private EmailService emailService;
     @Autowired
     private FileStorageService fileStorageService;
     @Autowired
@@ -88,8 +89,9 @@ public class UserServiceImpl implements UserService {
         verificationToken.setExpiryDate(new Date(System.currentTimeMillis() + 24 * 60 * 60* 1000));
         verificationTokenRepository.save(verificationToken);
 
-        //emailService.sendVerificationEmail(user,token);
+        emailService.sendVerificationEmail(user,token);
     }
+
 
     @Override
     public UserDto findByUsername(String username) {

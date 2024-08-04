@@ -2,6 +2,7 @@ package com.example.travelapp.service;
 
 
 import com.example.travelapp.entity.User;
+import io.jsonwebtoken.Claims;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,10 @@ public class UserDetailsImpl implements UserDetails {
                 .stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                 .collect(Collectors.toList());
+    }
+
+    public User getUser() {
+        return user;
     }
 
     @Override

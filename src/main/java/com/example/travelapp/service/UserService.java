@@ -1,6 +1,7 @@
 package com.example.travelapp.service;
 
 import com.example.travelapp.dto.UserDto;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
