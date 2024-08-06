@@ -4,29 +4,35 @@ import com.example.travelapp.utils.ErrorDto;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-@ControllerAdvice
-public class CustomExceptionHanler {
+@RestControllerAdvice
+public class CustomExceptionHandler {
+
+    @ExceptionHandler(EmailNotFoundException.class)
+    public ResponseEntity<?> handleEmailNotFoundException(EmailNotFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception ex, WebRequest request){
-        ErrorDto errorDetails = new ErrorDto();
-        errorDetails.setTimestamp(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
-        errorDetails.setMessage(ex.getMessage());
-        errorDetails.setPath(request.getDescription(false));
-        errorDetails.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorDetails.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-        errorDetails.setTrace(ex.getStackTrace().toString());
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> handleGlobalException(Exception ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorDto> handleValidationException(ValidationException ex, WebRequest request) {

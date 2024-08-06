@@ -9,8 +9,11 @@ public class JwtResponse {
 
     private String token;
     private String type = "Bearer";
+    private String firstName;
+    private String lastName;
+    private String password;
     private String username;
-    private Long id;
+    private boolean isEnabled;
     private String email;
     private List<String> roles;
     private String profilePictureUrl;
@@ -19,24 +22,16 @@ public class JwtResponse {
         this.token = token;
     }
 
-    public JwtResponse(String username,String token, String email, String profilePictureUrl) {
+
+    public JwtResponse(String username, String token, String email, String profilePictureUrl,boolean isEnabled,String firstName,String lastName,String password) {
         this.username = username;
         this.token = token;
+        this.isEnabled = isEnabled;
         this.email = email;
         this.profilePictureUrl = profilePictureUrl;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
     }
 
-    public JwtResponse(String token, String email, List<String> roles, String profilePictureUrl) {
-        this.token = token;
-        this.email = email;
-        this.roles = roles;
-        this.profilePictureUrl = profilePictureUrl;
-    }
-
-    public JwtResponse(String accessToken, Long id, String email, List<String> roles) {
-        this.token = accessToken;
-        this.id = id;
-        this.email = email;
-        this.roles = roles;
-    }
 }

@@ -4,6 +4,7 @@ import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.Role;
 import com.example.travelapp.entity.User;
 import com.example.travelapp.entity.VerificationToken;
+import com.example.travelapp.exceptions.EmailNotFoundException;
 import com.example.travelapp.repository.RoleRepository;
 import com.example.travelapp.repository.UserRepository;
 import com.example.travelapp.repository.VerificationTokenRepository;
@@ -13,6 +14,7 @@ import com.example.travelapp.service.UserService;
 import com.example.travelapp.utils.DTOConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +43,7 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public void createUser(UserDto userDto) {
+    public void createUser(UserDto userDto,MultipartFile profilePicture) {
         User user = new User();
         user.setEmail(userDto.getEmail());
         user.setUsername(userDto.getUsername());
@@ -68,7 +70,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setRoles(Collections.singleton(role));
 
-        MultipartFile profilePicture = userDto.getProfilePicture();
+        //MultipartFile profilePicture = userDto.getProfilePicture();
 
         if (profilePicture != null && !profilePicture.isEmpty()){
             try {
@@ -98,7 +100,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username);
 
         if (user == null){
-            return null;
+            throw new UsernameNotFoundException("User not found");
         }
 
         return dtoConverter.toDto(user);
@@ -109,7 +111,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email);
 
         if (user == null){
-            return null;
+            throw new EmailNotFoundException("Email not found");
         }
 
         return dtoConverter.toDto(user);

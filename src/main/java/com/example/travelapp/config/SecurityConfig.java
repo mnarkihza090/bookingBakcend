@@ -34,8 +34,10 @@ public class SecurityConfig {
 
     private final String[] publicUrl = {
             "/",
-            "/api/auth/login/",
+            "/api/auth/login",
             "/api/auth/register",
+            "/api/user/profile",
+            "/api/auth/resend-verification",
             "/verify",
             "/api/**",
             "/src/**",
@@ -70,24 +72,22 @@ public class SecurityConfig {
                         .requestMatchers(publicUrl).permitAll()
                         .anyRequest().authenticated());
 
-        http.formLogin(frm -> frm.loginPage("/api/auth/login"));
-
         // Add our custom JWT security filter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /*@Bean
+    @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManager = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManager.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         return authenticationManager.build();
-    }*/
-    @Bean
+    }
+   /* @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
+    }*/
 
     @Bean
     public PasswordEncoder passwordEncoder(){

@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface UserService {
-    void createUser(UserDto userDto);
+    void createUser(UserDto userDto,MultipartFile profilePicture);
     UserDto findByUsername(String username);
     UserDto findByEmail(String email);
     List<UserDto> getUsers();

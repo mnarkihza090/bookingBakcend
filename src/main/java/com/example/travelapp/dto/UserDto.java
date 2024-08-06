@@ -16,8 +16,8 @@ public class UserDto {
     private String username;
     private String firstName;
     private String lastName;
-    private MultipartFile profilePicture; // for uploading image file
-    private String profilePictureUrl; // for displaying image
+    //private MultipartFile profilePicture; // for uploading image file
+    //private String profilePictureUrl; // for displaying image
     private String email;
     private String password;
     private boolean isEnabled;
