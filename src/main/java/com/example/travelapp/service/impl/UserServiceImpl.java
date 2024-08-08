@@ -3,10 +3,12 @@ package com.example.travelapp.service.impl;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.Role;
 import com.example.travelapp.entity.User;
+import com.example.travelapp.entity.VerificationCode;
 import com.example.travelapp.entity.VerificationToken;
 import com.example.travelapp.exceptions.EmailNotFoundException;
 import com.example.travelapp.repository.RoleRepository;
 import com.example.travelapp.repository.UserRepository;
+import com.example.travelapp.repository.VerificationCodeRepository;
 import com.example.travelapp.repository.VerificationTokenRepository;
 import com.example.travelapp.service.EmailService;
 import com.example.travelapp.service.FileStorageService;
@@ -34,6 +36,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private DTOConverter dtoConverter;
     @Autowired
+    private VerificationCodeRepository verificationCodeRepository;
+    @Autowired
     private VerificationTokenRepository verificationTokenRepository;
     @Autowired
     private EmailService emailService;
@@ -51,6 +55,7 @@ public class UserServiceImpl implements UserService {
         user.setConfirmPassword(passwordEncoder.encode(userDto.getConfirmPassword()));
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
+        user.setPhoneNumber(userDto.getPhoneNumber());
         user.setEnabled(false);
 
         if (findByUsername(userDto.getUsername()) != null){
@@ -100,7 +105,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username);
 
         if (user == null){
-            throw new UsernameNotFoundException("User not found");
+            return null;
         }
 
         return dtoConverter.toDto(user);
@@ -111,7 +116,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email);
 
         if (user == null){
-            throw new EmailNotFoundException("Email not found");
+            return null;
         }
 
         return dtoConverter.toDto(user);
@@ -140,8 +145,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkPassword(String password, String encodedPassword) {
-        return passwordEncoder.matches(password,encodedPassword);
+    public UserDto findByPhoneNumber(String phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+
+        if (user!= null){
+            return dtoConverter.toDto(user);
+        }
+        return null;
+    }
+
+    @Override
+    public void saveResetCode(Long userId, String resetCode) {
+        VerificationCode verificationCode = new VerificationCode();
+        verificationCode.setUserId(userId);
+        verificationCode.setCode(resetCode);
+        verificationCode.setExpiryDate(new Date(System.currentTimeMillis() + 10 *60 *10));
+
+        VerificationCode existingCode = verificationCodeRepository.findByUserId(userId);
+        if (existingCode != null){
+            verificationCodeRepository.delete(existingCode);
+        }
+
+        verificationCodeRepository.save(verificationCode);
+    }
+
+    @Override
+    public VerificationCode findVerificationCode(Long userId, String resetCode) {
+        return verificationCodeRepository.findByUserIdAndCode(userId, resetCode);
+    }
+
+    @Override
+    public void updatePassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new UsernameNotFoundException("User not found"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }
 

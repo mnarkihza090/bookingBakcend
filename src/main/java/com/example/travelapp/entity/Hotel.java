@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @Getter
 public class Hotel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +28,10 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel")
     private List<Review> reviews;
 
-    public Hotel(String name, String country, int roomNumber, String location, String description, Double pricePerPerson, List<String> images, String rating,List<String> amenities) {
+    public Hotel() {
+    }
+
+    public Hotel(String name, String country, int roomNumber, String location, String description, Double pricePerPerson, List<String> images, String rating, List<String> amenities) {
         this.name = name;
         this.country = country;
         this.roomNumber = roomNumber;

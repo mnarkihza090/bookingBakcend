@@ -20,6 +20,7 @@ public class UserDto {
     //private String profilePictureUrl; // for displaying image
     private String email;
     private String password;
+    private String phoneNumber;
     private boolean isEnabled;
     @Transient
     private String confirmPassword;

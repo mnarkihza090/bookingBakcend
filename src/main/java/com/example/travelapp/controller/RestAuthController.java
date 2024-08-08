@@ -1,20 +1,18 @@
-package com.example.travelapp.rest;
+package com.example.travelapp.controller;
 
 import com.example.travelapp.dto.JwtResponse;
-import com.example.travelapp.dto.LoginDto;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.User;
+import com.example.travelapp.entity.VerificationCode;
 import com.example.travelapp.entity.VerificationToken;
-import com.example.travelapp.exceptions.EmailNotFoundException;
 import com.example.travelapp.repository.VerificationTokenRepository;
-import com.example.travelapp.service.EmailService;
-import com.example.travelapp.service.FileStorageService;
-import com.example.travelapp.service.UserDetailsImpl;
-import com.example.travelapp.service.UserService;
+import com.example.travelapp.request.ResetPasswordRequest;
+import com.example.travelapp.request.SendResetCodeRequest;
+import com.example.travelapp.request.VerifyResetCodeRequest;
+import com.example.travelapp.service.*;
 import com.example.travelapp.utils.DTOConverter;
 import com.example.travelapp.utils.JwtProvider;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,26 +21,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 public class RestAuthController {
     private static final Logger log = LoggerFactory.getLogger(RestAuthController.class);
     @Autowired
@@ -60,6 +50,60 @@ public class RestAuthController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private SmsService smsService;
+
+    @PostMapping("/send-reset-code")
+    public ResponseEntity<?> sendResetCode(@RequestBody SendResetCodeRequest resetCodeRequest){
+        UserDto userDto = userService.findByPhoneNumber(resetCodeRequest.getPhoneNumber());
+
+        if (userDto == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this phone number");
+        }
+
+        // we create random number with 6 numbers
+        String resetCode = String.valueOf(new Random().nextInt(899999) + 100000);
+        userService.saveResetCode(userDto.getId(),resetCode);
+        smsService.sendSms(resetCodeRequest.getPhoneNumber(),"Your reset code is: " + resetCode);
+
+        return ResponseEntity.ok("Reset code sent successfully");
+    }
+
+    @PostMapping("/verify-reset-code")
+    public ResponseEntity<?> verifyResetCode(@RequestBody VerifyResetCodeRequest request){
+        UserDto userDto = userService.findByPhoneNumber(request.getPhoneNumber());
+
+        if (userDto == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this phone number");
+        }
+
+        VerificationCode code = userService.findVerificationCode(userDto.getId(), request.getResetCode());
+
+        if (code == null || code.isExpired()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired reset code");
+        }
+
+        return ResponseEntity.ok("Reset code verified successfully");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request){
+        UserDto userDto = userService.findByPhoneNumber(request.getPhoneNumber());
+
+        if (userDto == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this phone number");
+        }
+
+        VerificationCode code = userService.findVerificationCode(userDto.getId(), request.getResetCode());
+
+        if (code == null || code.isExpired()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired reset code");
+        }
+        userService.updatePassword(userDto.getId(),request.getNewPassword());
+
+        return ResponseEntity.ok("Password reset successfully");
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> loginPost (@RequestBody UserDto userDto) {
         log.info("Login attempt for email: {}", userDto.getEmail());
@@ -76,7 +120,7 @@ public class RestAuthController {
             String jwt = jwtProvider.generateToken(authentication);
 
             log.info("Login successful for email: {}", userDto.getEmail());
-            return ResponseEntity.ok(new JwtResponse(userDetails.getUser().getFirstName(), jwt, userDetails.getUsername(), userDetails.getUser().getProfilePicture(), userDetails.getUser().isEnabled(),userDetails.getUser().getFirstName(),userDetails.getUser().getLastName(),userDetails.getPassword()));
+            return ResponseEntity.ok(new JwtResponse(userDetails.getUser().getFirstName(), jwt, userDetails.getUsername(), userDetails.getUser().getProfilePicture(), userDetails.getUser().isEnabled(),userDetails.getUser().getFirstName(),userDetails.getUser().getLastName(),userDetails.getPassword(),userDetails.getUser().getPhoneNumber()));
 
     }
 
@@ -138,5 +182,16 @@ public class RestAuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserDto> getMyProfileInfo(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl currentUser= (UserDetailsImpl) authentication.getPrincipal();
+
+        UserDto userDto = userService.findByEmail(currentUser.getUser().getEmail());
+
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 }

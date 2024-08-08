@@ -14,6 +14,7 @@ public class JwtResponse {
     private String password;
     private String username;
     private boolean isEnabled;
+    private String phoneNumber;
     private String email;
     private List<String> roles;
     private String profilePictureUrl;
@@ -23,7 +24,7 @@ public class JwtResponse {
     }
 
 
-    public JwtResponse(String username, String token, String email, String profilePictureUrl,boolean isEnabled,String firstName,String lastName,String password) {
+    public JwtResponse(String username, String token, String email, String profilePictureUrl,boolean isEnabled,String firstName,String lastName,String password,String phoneNumber) {
         this.username = username;
         this.token = token;
         this.isEnabled = isEnabled;
@@ -32,6 +33,7 @@ public class JwtResponse {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
+        this.phoneNumber = phoneNumber;
     }
 
 }
