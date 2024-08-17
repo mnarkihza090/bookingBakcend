@@ -1,5 +1,6 @@
 package com.example.travelapp.utils;
 
+import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
@@ -39,25 +40,21 @@ public class JwtProvider {
                 .setSubject(userDetails.getUsername())
                 .claim("profilePictureUrl",userDetails.getUser().getProfilePicture())
                 .claim("username",userDetails.getUsername())
+                .claim("userId",userDetails.getUser().getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
                 .compact();
     }
 
 
     public String getUsernameFromJwtToken(String token){
-        String username = null;
-        try {
-            username = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
-        }catch (Exception e){
-            log.error("Error parsing");
-        }
-        return username;
+
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateToken(String token){

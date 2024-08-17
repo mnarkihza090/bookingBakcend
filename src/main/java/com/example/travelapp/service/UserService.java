@@ -14,7 +14,7 @@ public interface UserService {
     boolean verifyUser(String token);
     UserDto findByPhoneNumber(String phoneNumber);
     void saveResetCode(Long userId,String resetCode);
-
+    UserDto findByUserId(Long userId);
 
     VerificationCode findVerificationCode(Long userId, String resetCode);
 

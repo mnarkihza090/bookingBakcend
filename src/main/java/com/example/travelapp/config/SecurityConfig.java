@@ -21,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -34,14 +33,9 @@ public class SecurityConfig {
 
     private final String[] publicUrl = {
             "/",
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/auth/profile",
-            "/api/auth/resend-verification",
-            "/verify",
+            "/api/**",
+            "/api/auth/**",
             "/api/hotels",
-            "/src/**",
-            "/api/auth/verify",
             "/home",
             "/verify",
             "/*.css",
@@ -54,6 +48,7 @@ public class SecurityConfig {
             "/resources/**",
             "/static/**",
             "/css/**",
+            "/icon/**",
             "/js/**",
             "/images/**",
             "/favicon.ico",
@@ -72,7 +67,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(publicUrl).permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated()
+                        );
 
         // Add our custom JWT security filter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
@@ -80,16 +76,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
+    /*@Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManager = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManager.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         return authenticationManager.build();
-    }
-   /* @Bean
+    }*/
+   @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }*/
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){

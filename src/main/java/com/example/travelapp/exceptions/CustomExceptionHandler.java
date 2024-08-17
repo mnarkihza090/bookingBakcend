@@ -5,6 +5,7 @@ import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -36,6 +37,29 @@ public class CustomExceptionHandler {
         errorDto.setTrace(ex.getStackTrace().toString());
 
         return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<?> handleResourceNotFoundException(NullPointerException exception) {
+
+
+        if (exception.getStackTrace().length > 0){
+            StackTraceElement element = exception.getStackTrace()[0];
+            log.error("Exception occurred in class: {}, method: {}, line: {}",
+                    element.getClassName(), element.getMethodName(), element.getLineNumber());
+        }
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleResourceNotFoundException(HttpMessageNotReadableException exception) {
+
+
+        if (exception.getStackTrace().length > 0){
+            StackTraceElement element = exception.getStackTrace()[0];
+            log.error("Exception occurred in class: {}, method: {}, line: {}",
+                    element.getClassName(), element.getMethodName(), element.getLineNumber());
+        }
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

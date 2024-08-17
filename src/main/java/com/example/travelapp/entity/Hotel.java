@@ -1,6 +1,8 @@
 package com.example.travelapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,20 +20,22 @@ public class Hotel {
     private String country;
     private int roomNumber;
     private String location;
+    @Size(min = 10,max = 1000)
     private String description;
     private Double pricePerPerson;
     @ElementCollection
     private List<String> images;
-    private String rating;
     @ElementCollection
-    private List<String> amenities;
+    private List<Amenity> amenities;
     @OneToMany(mappedBy = "hotel")
+    @JsonIgnore
     private List<Review> reviews;
 
     public Hotel() {
     }
 
-    public Hotel(String name, String country, int roomNumber, String location, String description, Double pricePerPerson, List<String> images, String rating, List<String> amenities) {
+    public Hotel(String name, String country, int roomNumber,
+                 String location, String description, Double pricePerPerson, List<String> images, List<Amenity> amenities) {
         this.name = name;
         this.country = country;
         this.roomNumber = roomNumber;
@@ -39,7 +43,6 @@ public class Hotel {
         this.description = description;
         this.pricePerPerson = pricePerPerson;
         this.images = images;
-        this.rating = rating;
         this.amenities = amenities;
     }
 }

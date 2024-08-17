@@ -4,6 +4,7 @@ import com.example.travelapp.entity.Hotel;
 import com.example.travelapp.repository.HotelRepository;
 import com.example.travelapp.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class HotelServiceImpl implements HotelService {
     @Autowired
     private HotelRepository hotelRepository;
 
+    //@Cacheable("hotels")
     @Override
     public List<Hotel> getHotels() {
         List<Hotel> hotels = hotelRepository.findAll();
@@ -27,12 +29,13 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public Hotel findById(Long id) {
-        Optional<Hotel> hotel = hotelRepository.findById(id);
+        Hotel hotel = hotelRepository.findHotelById(id);
 
-        if (hotel.isEmpty()){
-            throw new RuntimeException("Hotel not found with id: " + id);
+        if (hotel == null){
+            return null;
+            //throw new RuntimeException("Hotel not found with id: " + id);
         }
 
-        return hotel.get();
+        return hotel;
     }
 }

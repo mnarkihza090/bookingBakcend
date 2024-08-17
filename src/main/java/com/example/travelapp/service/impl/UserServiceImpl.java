@@ -21,10 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -167,6 +164,13 @@ public class UserServiceImpl implements UserService {
         }
 
         verificationCodeRepository.save(verificationCode);
+    }
+
+    @Override
+    public UserDto findByUserId(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+
+        return user.map(value -> dtoConverter.toDto(value)).orElse(null);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.example.travelapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,13 +17,16 @@ public class Review {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
+    @JsonIgnore
     public Hotel hotel;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public User user;
-    private double rating;
+    private int rating;
     private String comment;
     private LocalDateTime publishedDate;
+
+
 }
 
 

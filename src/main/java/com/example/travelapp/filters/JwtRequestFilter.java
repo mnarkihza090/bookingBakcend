@@ -1,5 +1,6 @@
 package com.example.travelapp.filters;
 
+import com.example.travelapp.service.UserDetailsImpl;
 import com.example.travelapp.service.UserDetailsServiceImpl;
 import com.example.travelapp.utils.JwtProvider;
 import jakarta.servlet.FilterChain;
@@ -32,9 +33,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String token = extractJwtToken(request);
             if (token != null && jwtProvider.validateToken(token)){
                 String email = jwtProvider.getUsernameFromJwtToken(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                UserDetailsImpl userDetails =
+                        (UserDetailsImpl) userDetailsService.loadUserByUsername(email);
 
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                        new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
 
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

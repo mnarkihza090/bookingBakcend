@@ -33,8 +33,8 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
-public class RestAuthController {
-    private static final Logger log = LoggerFactory.getLogger(RestAuthController.class);
+public class AuthController {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     @Autowired
     private UserService userService;
     @Autowired
@@ -120,8 +120,7 @@ public class RestAuthController {
             String jwt = jwtProvider.generateToken(authentication);
 
             log.info("Login successful for email: {}", userDto.getEmail());
-            return ResponseEntity.ok(new JwtResponse(userDetails.getUser().getFirstName(), jwt, userDetails.getUsername(), userDetails.getUser().getProfilePicture(), userDetails.getUser().isEnabled(),userDetails.getUser().getFirstName(),userDetails.getUser().getLastName(),userDetails.getPassword(),userDetails.getUser().getPhoneNumber()));
-
+            return ResponseEntity.ok(new JwtResponse(jwt));
     }
 
     @Transactional
