@@ -5,8 +5,10 @@ import com.example.travelapp.repository.HotelRepository;
 import com.example.travelapp.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,12 +20,13 @@ public class HotelServiceImpl implements HotelService {
 
     //@Cacheable("hotels")
     @Override
-    public List<Hotel> getHotels() {
-        List<Hotel> hotels = hotelRepository.findAll();
+    public Page<Hotel> getHotels(Pageable pageable) {
+        Page<Hotel> hotels = hotelRepository.findAll(pageable);
 
         if (hotels.isEmpty()){
             throw new RuntimeException("No hotels found in the database");
         }
+
         return hotels;
     }
 

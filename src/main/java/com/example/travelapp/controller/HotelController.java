@@ -3,6 +3,7 @@ package com.example.travelapp.controller;
 import com.example.travelapp.dto.ReviewDto;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.Hotel;
+import com.example.travelapp.response.Pagination;
 import com.example.travelapp.service.HotelService;
 import com.example.travelapp.service.ReviewService;
 import com.example.travelapp.service.UserService;
@@ -11,13 +12,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +40,24 @@ public class HotelController {
     private DTOConverter dtoConverter;
 
     @GetMapping("/hotels")
-    public ResponseEntity<List<Hotel>> getHotels(){
-        List<Hotel> hotels = hotelService.getHotels();
+    public ResponseEntity<?> getHotels(
+            @RequestParam(defaultValue = "0",name = "pageNumber") String pageNumber,
+            @RequestParam(defaultValue = "6",name = "pageSize") String pageSize
+    ){
 
-        for (Hotel hotel : hotels){
-            List<String> hotelImages = hotel.getImages();
-            log.info("Images -> "+hotelImages);
-        }
+        int pageN = Integer.parseInt(pageNumber);
+        int pageS = Integer.parseInt(pageSize);
 
-        return new ResponseEntity<>(hotels,HttpStatus.OK);
+        Pageable pageable = PageRequest.of(pageN, pageS);
+        Page<Hotel> hotels = hotelService.getHotels(pageable);
+
+        return ResponseEntity.ok(
+                new Pagination<List<Hotel>>(
+                        hotels.getTotalPages(),
+                        hotels.getNumber(),
+                        hotels.getSize(),
+                        hotels.getContent(),
+                        hotels.getTotalElements()));
     }
 
     @GetMapping("/hotels/{hotelId}")
