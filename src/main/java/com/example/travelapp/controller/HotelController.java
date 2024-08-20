@@ -2,7 +2,10 @@ package com.example.travelapp.controller;
 
 import com.example.travelapp.dto.ReviewDto;
 import com.example.travelapp.dto.UserDto;
+import com.example.travelapp.entity.Amenity;
 import com.example.travelapp.entity.Hotel;
+import com.example.travelapp.entity.Room;
+import com.example.travelapp.request.HotelSearchRequest;
 import com.example.travelapp.response.Pagination;
 import com.example.travelapp.service.HotelService;
 import com.example.travelapp.service.ReviewService;
@@ -15,12 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +43,22 @@ public class HotelController {
     private UserService userService;
     @Autowired
     private DTOConverter dtoConverter;
+
+
+    @PostMapping("/hotels/search-hotels")
+    public ResponseEntity<?> searchHotels(
+            @RequestBody HotelSearchRequest request
+    ){
+        List<Hotel> hotels = hotelService.searchHotel(request);
+
+        for (Hotel hotel : hotels){
+            for (Amenity amenity : hotel.getAmenities()){
+                log.info("Amenity: {}", amenity.getName());
+            }
+        }
+
+        return new ResponseEntity<>(hotels,HttpStatus.OK);
+    }
 
     @GetMapping("/hotels")
     public ResponseEntity<?> getHotels(
@@ -58,6 +79,20 @@ public class HotelController {
                         hotels.getSize(),
                         hotels.getContent(),
                         hotels.getTotalElements()));
+    }
+
+    @GetMapping("/hotels/{hotelId}/room-detail")
+    public ResponseEntity<?> getRoomDetails(@PathVariable Long hotelId){
+
+        Hotel hotel = hotelService.findById(hotelId);
+
+        if (hotel == null){
+            throw new IllegalStateException("Hotel not found");
+        }
+
+        List<Room> rooms = hotel.getRooms();
+
+        return new ResponseEntity<>(rooms,HttpStatus.OK);
     }
 
     @GetMapping("/hotels/{hotelId}")

@@ -2,6 +2,7 @@ package com.example.travelapp.service.impl;
 
 import com.example.travelapp.entity.Hotel;
 import com.example.travelapp.repository.HotelRepository;
+import com.example.travelapp.request.HotelSearchRequest;
 import com.example.travelapp.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,5 +41,12 @@ public class HotelServiceImpl implements HotelService {
         }
 
         return hotel;
+    }
+
+    @Override
+    public List<Hotel> searchHotel(HotelSearchRequest request) {
+        int totalGuests = request.getAdults() + request.getChildren() + request.getInfant();
+
+        return hotelRepository.searchHotels(request.getLocation(),request.getCheckInDate(),request.getCheckOutDate(),totalGuests);
     }
 }
