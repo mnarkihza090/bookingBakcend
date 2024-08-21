@@ -28,6 +28,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 
@@ -50,23 +51,21 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-    @Autowired
-    private SmsService smsService;
 
     @PostMapping("/send-reset-code")
-    public ResponseEntity<?> sendResetCode(@RequestBody SendResetCodeRequest resetCodeRequest){
-        UserDto userDto = userService.findByPhoneNumber(resetCodeRequest.getPhoneNumber());
+    public ResponseEntity<?> sendResetCode(@RequestBody SendResetCodeRequest request){
+        UserDto userDto = userService.findByEmail(request.getEmail());
 
         if (userDto == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this phone number");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this email address");
         }
-
         // we create random number with 6 numbers
-        String resetCode = String.valueOf(new Random().nextInt(899999) + 100000);
-        userService.saveResetCode(userDto.getId(),resetCode);
-        smsService.sendSms(resetCodeRequest.getPhoneNumber(),"Your reset code is: " + resetCode);
+        String resetCode = generateResetCode();
 
-        return ResponseEntity.ok("Reset code sent successfully");
+        userService.saveResetCode(userDto.getId(),resetCode);
+        emailService.sendResetPasswordEmail(request.getEmail(), resetCode);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userDto);
     }
 
     @PostMapping("/verify-reset-code")
@@ -85,7 +84,11 @@ public class AuthController {
 
         return ResponseEntity.ok("Reset code verified successfully");
     }
-
+    private String generateResetCode() {
+        Random random = new SecureRandom();  // Güvenli bir şekilde rastgele sayı oluşturur
+        int resetCode = random.nextInt(900000) + 100000;  // 100000 ile 999999 arasında bir sayı oluşturur
+        return String.valueOf(resetCode);  // Sayıyı String'e çevirir ve geri döner
+    }
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request){
         UserDto userDto = userService.findByPhoneNumber(request.getPhoneNumber());
@@ -93,12 +96,14 @@ public class AuthController {
         if (userDto == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this phone number");
         }
+        userService.saveResetCode(userDto.getId(),request.getResetCode());
 
         VerificationCode code = userService.findVerificationCode(userDto.getId(), request.getResetCode());
 
         if (code == null || code.isExpired()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired reset code");
         }
+
         userService.updatePassword(userDto.getId(),request.getNewPassword());
 
         return ResponseEntity.ok("Password reset successfully");

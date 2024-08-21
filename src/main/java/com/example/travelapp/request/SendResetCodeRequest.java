@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SendResetCodeRequest {
-    private String phoneNumber;
+    private String email;
 }

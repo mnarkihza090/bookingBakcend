@@ -45,6 +45,31 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void sendResetPasswordEmail(String email, String resetCode) {
+        String subject = "M-Travel verification email";
+        String senderName = "M-Travel";
+
+        String mailContent = "<p> Dear " +email + ", </p>";
+        mailContent += "<p> Your reset code is <strong>" + resetCode + "</strong></p>";
+
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+
+            helper.setFrom("admin@mtravel.com",senderName);
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(mailContent,true);
+
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email",e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
 
