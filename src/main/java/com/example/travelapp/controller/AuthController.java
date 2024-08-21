@@ -69,44 +69,46 @@ public class AuthController {
     }
 
     @PostMapping("/verify-reset-code")
-    public ResponseEntity<?> verifyResetCode(@RequestBody VerifyResetCodeRequest request){
-        UserDto userDto = userService.findByPhoneNumber(request.getPhoneNumber());
+    public ResponseEntity<?> verifyResetCode(@RequestParam String email,
+                                             @RequestBody VerifyResetCodeRequest request){
+        UserDto userDto = userService.findByEmail(email);
 
         if (userDto == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this phone number");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this email");
         }
 
-        VerificationCode code = userService.findVerificationCode(userDto.getId(), request.getResetCode());
+        VerificationCode code =
+                userService.findVerificationCode(userDto.getId(), request.getResetCode());
 
         if (code == null || code.isExpired()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired reset code");
         }
 
-        return ResponseEntity.ok("Reset code verified successfully");
+        return ResponseEntity.ok(code);
     }
+
     private String generateResetCode() {
-        Random random = new SecureRandom();  // Güvenli bir şekilde rastgele sayı oluşturur
-        int resetCode = random.nextInt(900000) + 100000;  // 100000 ile 999999 arasında bir sayı oluşturur
-        return String.valueOf(resetCode);  // Sayıyı String'e çevirir ve geri döner
+        Random random = new SecureRandom();
+        int resetCode = random.nextInt(900000) + 100000;
+        return String.valueOf(resetCode);
     }
+
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request){
-        UserDto userDto = userService.findByPhoneNumber(request.getPhoneNumber());
+    public ResponseEntity<?> resetPassword(@RequestParam String email,
+                                           @RequestBody ResetPasswordRequest request){
+        UserDto userDto = userService.findByEmail(email);
 
         if (userDto == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this phone number");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found with this email");
         }
-        userService.saveResetCode(userDto.getId(),request.getResetCode());
 
-        VerificationCode code = userService.findVerificationCode(userDto.getId(), request.getResetCode());
-
-        if (code == null || code.isExpired()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired reset code");
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password and confirm password do not match");
         }
 
         userService.updatePassword(userDto.getId(),request.getNewPassword());
 
-        return ResponseEntity.ok("Password reset successfully");
+        return ResponseEntity.ok(request);
     }
 
     @PostMapping("/login")

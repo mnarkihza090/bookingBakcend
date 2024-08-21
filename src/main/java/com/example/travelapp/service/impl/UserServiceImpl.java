@@ -21,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -154,9 +156,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveResetCode(Long userId, String resetCode) {
         VerificationCode verificationCode = new VerificationCode();
+
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, 3);
+        Date expiryTime = calendar.getTime();
+
         verificationCode.setUserId(userId);
         verificationCode.setCode(resetCode);
-        verificationCode.setExpiryDate(new Date(System.currentTimeMillis() + 10 *60 *10));
+        verificationCode.setExpiryDate(expiryTime);
 
         VerificationCode existingCode = verificationCodeRepository.findByUserId(userId);
         if (existingCode != null){
@@ -166,6 +175,7 @@ public class UserServiceImpl implements UserService {
 
         verificationCodeRepository.save(verificationCode);
     }
+
 
     @Override
     public UserDto findByUserId(Long userId) {

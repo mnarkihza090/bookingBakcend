@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class VerifyResetCodeRequest {
     private String resetCode;
-    private String phoneNumber;
 }
