@@ -6,5 +6,5 @@ import lombok.Data;
 public enum RoomStatus {
     AVAILABLE,
     RESERVED,
-    UNAVAILABLE
+    OCCUPIED
 }

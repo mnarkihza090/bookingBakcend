@@ -34,7 +34,8 @@ public class Room {
     @ElementCollection
     private List<Amenity> amenities;
 
-    private RoomStatus roomStatus;
+    @Enumerated(EnumType.STRING)
+    private RoomStatus roomStatus = RoomStatus.AVAILABLE;
 
     private LocalDate availableFrom;
     private LocalDate availableUntil;
