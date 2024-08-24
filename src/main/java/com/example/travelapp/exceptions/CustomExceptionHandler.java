@@ -28,6 +28,21 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+
+
+    @ExceptionHandler(BookingFailedException.class)
+    public ResponseEntity<?> handleBookingFailedException(BookingFailedException exception) {
+
+
+        if (exception.getStackTrace().length > 0){
+            StackTraceElement element = exception.getStackTrace()[0];
+            log.error("Exception occurred in class: {}, method: {}, line: {}, fileName: {}",
+                    element.getClassName(), element.getMethodName(), element.getLineNumber(),element.getFileName());
+        }
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
         ErrorDto errorDto = new ErrorDto();

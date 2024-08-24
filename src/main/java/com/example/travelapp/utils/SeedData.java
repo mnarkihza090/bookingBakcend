@@ -52,19 +52,18 @@ public class SeedData implements CommandLineRunner {
                                 new Room("101", 2, 100.0, "Standard", "Comfortable room with city view", Arrays.asList("room1.avif", "room2.avif"),
                                         Arrays.asList(
                                                 new Amenity("Free WiFi", "/icons/wifi.png"),
-                                                new Amenity("Pool", "/icons/pool.png"),
-                                                new Amenity("Free Breakfast", "/icons/breakfast.png"),
-                                                new Amenity("Gym", "/icons/gym.png"),
-                                                new Amenity("Bar", "/icons/bar.png")
+                                                new Amenity("Bath", "/icons/bath-tub.png"),
+                                                new Amenity("Tv", "/icons/television.png"),
+                                                new Amenity("AirConditioner", "/icons/air-conditioner.png")
+
                                         ),LocalDate.now().plusDays(1),
                                         LocalDate.now().plusDays(10)),
                                 new Room("102", 4, 150.0, "Suite", "Spacious suite with sea view", Arrays.asList("room3.avif", "room4.webp"),
                                         Arrays.asList(
                                                 new Amenity("Free WiFi", "/icons/wifi.png"),
-                                                new Amenity("Pool", "/icons/pool.png"),
-                                                new Amenity("Free Breakfast", "/icons/breakfast.png"),
-                                                new Amenity("Gym", "/icons/gym.png"),
-                                                new Amenity("Bar", "/icons/bar.png")
+                                                new Amenity("Bath", "/icons/bath-tub.png"),
+                                                new Amenity("Tv", "/icons/television.png"),
+                                                new Amenity("AirConditioner", "/icons/air-conditioner.png")
                                         ), LocalDate.now().plusDays(1),
                                         LocalDate.now().plusDays(10))
                         )
@@ -84,20 +83,18 @@ public class SeedData implements CommandLineRunner {
                         Arrays.asList(
                                 new Room("201", 1, 80.0, "Single", "Cozy single room with a view of the city", Arrays.asList("room5.avif", "room6.webp"),
                                         Arrays.asList(
-                                                new Amenity("Free Breakfast", "/icons/breakfast.png"),
-                                                new Amenity("Gym", "/icons/gym.png"),
-                                                new Amenity("Spa", "/icons/spa.png"),
-                                                new Amenity("Bar", "/icons/bar.png"),
-                                                new Amenity("Restaurant", "/icons/restaurant.png")
+                                                new Amenity("Free WiFi", "/icons/wifi.png"),
+                                                new Amenity("Bath", "/icons/bath-tub.png"),
+                                                new Amenity("Tv", "/icons/television.png"),
+                                                new Amenity("AirConditioner", "/icons/air-conditioner.png")
                                         ),LocalDate.now().plusDays(5),
                                         LocalDate.now().plusDays(15)),
                                 new Room("202", 3, 120.0, "Family", "Spacious room suitable for families", Arrays.asList("room7.webp", "room8.webp"),
                                         Arrays.asList(
-                                                new Amenity("Free Breakfast", "/icons/breakfast.png"),
-                                                new Amenity("Gym", "/icons/gym.png"),
-                                                new Amenity("Spa", "/icons/spa.png"),
-                                                new Amenity("Bar", "/icons/bar.png"),
-                                                new Amenity("Restaurant", "/icons/restaurant.png")
+                                                new Amenity("Free WiFi", "/icons/wifi.png"),
+                                                new Amenity("Bath", "/icons/bath-tub.png"),
+                                                new Amenity("Tv", "/icons/television.png"),
+                                                new Amenity("AirConditioner", "/icons/air-conditioner.png")
                                         ),LocalDate.now().plusDays(2),
                                         LocalDate.now().plusDays(9))
                         )

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,14 +19,19 @@ public class Room {
     private Long id;
 
     private String roomNumber;
-    private int capacity;
     private Double pricePerNight;
     private String roomType;
     private String description;
 
+    private int capacity;
+    private int standardOccupancy;
+    private BigDecimal extraAdultPrice;
+    private BigDecimal extraChildPrice;
+    private BigDecimal extraInfantPrice;
+
     @ElementCollection
     private List<String> images;
-
+    private String location;
     @ManyToOne
     @JoinColumn(name = "hotel_id")
     @JsonBackReference

@@ -1,9 +1,11 @@
 package com.example.travelapp.utils;
 
 import com.example.travelapp.dto.ReviewDto;
+import com.example.travelapp.dto.RoomDto;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.Hotel;
 import com.example.travelapp.entity.Review;
+import com.example.travelapp.entity.Room;
 import com.example.travelapp.entity.User;
 import com.example.travelapp.repository.UserRepository;
 import com.example.travelapp.service.HotelService;
@@ -104,6 +106,35 @@ public class DTOConverter {
         return reviewDto;
     }
 
+    public Room toRoomEntity(RoomDto roomDto){
+        Room room = new Room();
+        Hotel hotel = hotelService.findById(roomDto.getHotelId());
+
+        room.setId(roomDto.getId());
+        room.setHotel(hotel);
+        room.setRoomNumber(roomDto.getRoomNumber());
+        room.setRoomType(roomDto.getRoomType());
+        room.setPricePerNight(roomDto.getPricePerNight());
+        room.setCapacity(roomDto.getCapacity());
+        room.setDescription(roomDto.getDescription());
+
+        return room;
+    }
+
+    public RoomDto toRoomDto(Room room){
+        RoomDto roomDto = new RoomDto();
+        Hotel hotel = hotelService.findById(roomDto.getHotelId());
+
+        roomDto.setId(room.getId());
+        roomDto.setHotelId(hotel.getId());
+        roomDto.setRoomNumber(room.getRoomNumber());
+        roomDto.setRoomType(room.getRoomType());
+        roomDto.setPricePerNight(room.getPricePerNight());
+        roomDto.setCapacity(room.getCapacity());
+        roomDto.setDescription(room.getDescription());
+
+        return roomDto;
+    }
 
 }
 

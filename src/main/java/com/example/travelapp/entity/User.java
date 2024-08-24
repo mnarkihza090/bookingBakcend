@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,12 @@ public class User {
     private boolean isEnabled;
     private String password;
     private String confirmPassword;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<RoomBooking> bookings = new ArrayList<RoomBooking>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Address> addresses;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Review> reviews;

@@ -31,5 +31,5 @@ public interface RoomRepository extends JpaRepository<Room,Long>{
                                    @Param("checkOutDate") LocalDate checkOutDate,
                                    @Param("totalGuests") int guestCount);
 
-
+    Room findRoomById(Long roomId);
 }

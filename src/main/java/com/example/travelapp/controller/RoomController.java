@@ -29,6 +29,13 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
+    @GetMapping("/rooms/{roomId}")
+    public ResponseEntity<?> getRoom(@PathVariable Long roomId){
+        Room room = roomService.findRoomByRoomId(roomId);
+
+        return ResponseEntity.ok(room);
+    }
+
     @PostMapping("/hotels/{hotelId}/rooms")
     public ResponseEntity<?> getRoomsByCriteria(
             @PathVariable Long hotelId,
