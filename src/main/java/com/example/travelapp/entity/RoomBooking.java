@@ -3,6 +3,7 @@ package com.example.travelapp.entity;
 import com.example.travelapp.enums.BookingStatus;
 import com.example.travelapp.enums.PaymentStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,12 +28,23 @@ public class RoomBooking {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    private String firstName;
+    private String lastName;
+    private String email;
+    @Pattern(regexp = "^\\d{11}$",message = "Phone number must be 11 digits")
+    private String phoneNumber;
+    private String address;
+    private String state;
+    private String city;
+    private String country;
+
     private int children;
     private int adults;
     private int infant;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private BigDecimal totalPrice;
+    @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
     private String note;
     private LocalDate createdDate;
@@ -72,14 +84,14 @@ public class RoomBooking {
         BigDecimal additionalAdultCharge = BigDecimal.ZERO;
         if (adults > room.getCapacity()) {
             additionalAdultCharge = BigDecimal.valueOf(adults - room.getCapacity())
-                    .multiply(room.getExtraAdultPrice());
+                    .multiply(room.getAdultPrice());
         }
 
         BigDecimal additionalChildCharge =
-                    BigDecimal.valueOf(children).multiply(room.getExtraChildPrice());
+                    BigDecimal.valueOf(children).multiply(room.getChildPrice());
 
         BigDecimal additionalInfantCharge =
-                    BigDecimal.valueOf(infant).multiply(room.getExtraInfantPrice());
+                    BigDecimal.valueOf(infant).multiply(room.getInfantPrice());
 
         totalPrice =
                 totalPrice.add(additionalAdultCharge)

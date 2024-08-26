@@ -19,7 +19,7 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/payment")
-    public ResponseEntity<?> makePayment(@RequestBody Payment paymentRequest){
+    public ResponseEntity<?> makePayment(@RequestBody PaymentRequest paymentRequest){
         boolean success = paymentService.processPayment(paymentRequest);
         if (success) {
             return new ResponseEntity<>("Payment successful!", HttpStatus.OK);
@@ -27,4 +27,5 @@ public class PaymentController {
             return new ResponseEntity<>("Payment failed!", HttpStatus.BAD_REQUEST);
         }
     }
+
 }

@@ -2,15 +2,15 @@ package com.example.travelapp.service.impl;
 
 import com.example.travelapp.dto.RoomDto;
 import com.example.travelapp.dto.UserDto;
-import com.example.travelapp.entity.Payment;
-import com.example.travelapp.entity.Room;
-import com.example.travelapp.entity.RoomBooking;
-import com.example.travelapp.entity.User;
+import com.example.travelapp.entity.*;
 import com.example.travelapp.enums.BookingStatus;
 import com.example.travelapp.enums.PaymentStatus;
+import com.example.travelapp.enums.PaymentType;
+import com.example.travelapp.enums.RoomStatus;
 import com.example.travelapp.exceptions.BookingFailedException;
 import com.example.travelapp.exceptions.PaymentFailedException;
 import com.example.travelapp.exceptions.ResourceNotFound;
+import com.example.travelapp.mapper.PaymentMapper;
 import com.example.travelapp.repository.HotelRepository;
 import com.example.travelapp.repository.PaymentRepository;
 import com.example.travelapp.repository.RoomBookingRepository;
@@ -59,8 +59,19 @@ public class BookingServiceImpl implements BookingService {
                 throw new ResourceNotFound("Room not found");
             }
 
+
             roomBooking.setUser(dtoConverter.toEntity(userDto));
             roomBooking.setRoom(room);
+
+            // Booking address
+            roomBooking.setFirstName(bookingRequest.getFirstName());
+            roomBooking.setLastName(bookingRequest.getLastName());
+            roomBooking.setEmail(bookingRequest.getEmail());
+            roomBooking.setPhoneNumber(bookingRequest.getPhoneNumber());
+            roomBooking.setState(bookingRequest.getState());
+            roomBooking.setCity(bookingRequest.getCity());
+            roomBooking.setCountry(bookingRequest.getCountry());
+
 
             roomBooking.setAdults(bookingRequest.getAdults());
             roomBooking.setChildren(bookingRequest.getChildren());
@@ -69,7 +80,6 @@ public class BookingServiceImpl implements BookingService {
             roomBooking.setCheckOutDate(bookingRequest.getCheckOutDate());
             roomBooking.setBookingReferenceNumber(generateReferenceNumber());
             roomBooking.setNote(bookingRequest.getNote());
-            roomBooking.setBookingStatus(BookingStatus.PENDING);
             roomBooking.setCreatedDate(LocalDate.now());
 
             roomBooking.calculateTotalPrice();
@@ -77,19 +87,37 @@ public class BookingServiceImpl implements BookingService {
             Payment payment = new Payment();
             payment.setPaymentDate(LocalDate.now());
             payment.setPaymentAmount(roomBooking.calculateTotalPrice());
-            payment.setPaymentStatus(PaymentStatus.PENDING);
-            payment.setPaymentType(bookingRequest.getPayment().getPaymentType());
+
+            switch (bookingRequest.getPayment().getPaymentType()){
+                case CREDIT_CARD:
+                    payment.setPaymentType(PaymentType.CREDIT_CARD);
+                    payment.setCardNumber(bookingRequest.getPayment().getCardNumber());
+                    payment.setCardExpiryDate(bookingRequest.getPayment().getCardExpiryDate());
+                    payment.setCardHolderName(bookingRequest.getPayment().getCardHolderName());
+                    payment.setCardSecurityCode(bookingRequest.getPayment().getCardSecurityCode());
+                    break;
+                case PAYPAL:
+                    payment.setPaymentType(PaymentType.PAYPAL);
+                    payment.setPaypalEmail(bookingRequest.getPayment().getPaypalEmail());
+                    break;
+                case CASH:
+                    payment.setPaymentType(PaymentType.CASH);
+                    break;
+            }
+
             payment.setRoomBooking(roomBooking);
             roomBooking.setPayment(payment);
 
-            paymentService.savePayment(payment);
+            paymentService.processPayment(dtoConverter.toPaymentDto(payment));
 
-            if (!paymentService.processPayment(payment)) {
+            if (!paymentService.processPayment(dtoConverter.toPaymentDto(payment))) {
                 throw new PaymentFailedException("Payment failed for booking reference: " + roomBooking.getBookingReferenceNumber());
             }
 
             payment.setPaymentStatus(PaymentStatus.PAID);
             roomBooking.setBookingStatus(BookingStatus.CONFIRMED);
+
+            room.setRoomStatus(RoomStatus.RESERVED);
 
             roomBookingRepository.save(roomBooking);
 

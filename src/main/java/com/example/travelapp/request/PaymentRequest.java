@@ -20,6 +20,14 @@ public class PaymentRequest {
     private PaymentType paymentType;
     private PaymentStatus paymentStatus;
     private LocalDate paymentDate;
-    private Long roomBookingId;
+
+    // Credit Card fields
+    private String cardNumber;
+    private String cardHolderName;
+    private String cardExpiryDate;
+    private String cardSecurityCode;
+
+    // PayPal fields
+    private String paypalEmail;
 
 }

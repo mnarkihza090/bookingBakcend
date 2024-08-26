@@ -2,6 +2,7 @@ package com.example.travelapp.entity;
 
 import com.example.travelapp.enums.RoomStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,10 +25,9 @@ public class Room {
     private String description;
 
     private int capacity;
-    private int standardOccupancy;
-    private BigDecimal extraAdultPrice;
-    private BigDecimal extraChildPrice;
-    private BigDecimal extraInfantPrice;
+    private BigDecimal adultPrice;
+    private BigDecimal childPrice;
+    private BigDecimal infantPrice;
 
     @ElementCollection
     private List<String> images;
@@ -46,8 +46,9 @@ public class Room {
     private LocalDate availableFrom;
     private LocalDate availableUntil;
 
-    //@OneToMany(mappedBy = "room")
-    //private List<Booking> bookings; // Bu oda için yapılan rezervasyonlar
+    @OneToMany(mappedBy = "room")
+    @JsonIgnore
+    private List<RoomBooking> bookings;
 
     public Room() {
     }

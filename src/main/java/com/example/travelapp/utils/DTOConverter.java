@@ -3,11 +3,9 @@ package com.example.travelapp.utils;
 import com.example.travelapp.dto.ReviewDto;
 import com.example.travelapp.dto.RoomDto;
 import com.example.travelapp.dto.UserDto;
-import com.example.travelapp.entity.Hotel;
-import com.example.travelapp.entity.Review;
-import com.example.travelapp.entity.Room;
-import com.example.travelapp.entity.User;
+import com.example.travelapp.entity.*;
 import com.example.travelapp.repository.UserRepository;
+import com.example.travelapp.request.PaymentRequest;
 import com.example.travelapp.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -134,6 +132,38 @@ public class DTOConverter {
         roomDto.setDescription(room.getDescription());
 
         return roomDto;
+    }
+
+    public Payment toPaymentEntity(PaymentRequest paymentRequest){
+        Payment payment = new Payment();
+        payment.setCardNumber(paymentRequest.getCardNumber());
+        payment.setPaymentType(paymentRequest.getPaymentType());
+        payment.setPaymentStatus(paymentRequest.getPaymentStatus());
+        payment.setPaymentAmount(paymentRequest.getPaymentAmount());
+        payment.setPaymentDate(paymentRequest.getPaymentDate());
+        payment.setCardExpiryDate(paymentRequest.getCardExpiryDate());
+        payment.setCardHolderName(paymentRequest.getCardHolderName());
+        payment.setCardSecurityCode(paymentRequest.getCardSecurityCode());
+        payment.setCardNumber(paymentRequest.getCardNumber());
+        payment.setPaypalEmail(payment.getPaypalEmail());
+
+        return payment;
+    }
+
+    public PaymentRequest toPaymentDto(Payment payment){
+        PaymentRequest paymentRequest = new PaymentRequest();
+        paymentRequest.setCardNumber(payment.getCardNumber());
+        paymentRequest.setPaymentType(payment.getPaymentType());
+        paymentRequest.setPaymentStatus(payment.getPaymentStatus());
+        paymentRequest.setPaymentAmount(payment.getPaymentAmount());
+        paymentRequest.setPaymentDate(payment.getPaymentDate());
+        paymentRequest.setCardExpiryDate(payment.getCardExpiryDate());
+        paymentRequest.setCardHolderName(payment.getCardHolderName());
+        paymentRequest.setCardSecurityCode(payment.getCardSecurityCode());
+        paymentRequest.setCardNumber(payment.getCardNumber());
+        paymentRequest.setPaypalEmail(payment.getPaypalEmail());
+
+        return paymentRequest;
     }
 
 }

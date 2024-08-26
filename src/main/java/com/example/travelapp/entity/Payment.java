@@ -19,7 +19,9 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private BigDecimal paymentAmount;
+    @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
     private LocalDate paymentDate;
 
@@ -27,32 +29,15 @@ public class Payment {
     @JoinColumn(name = "room_booking_id")
     private RoomBooking roomBooking;
 
-    // Methods to process payment based on payment type
-    public void processPayment() {
-        switch (paymentType) {
-            case CREDIT_CARD:
-                processCreditCardPayment();
-                break;
-            case PAYPAL:
-                processPayPalPayment();
-                break;
-            case CASH:
-                processCashPayment();
-                break;
-        }
-    }
 
-    private void processCreditCardPayment() {
-        // Logic to process credit card payment
-    }
+    // Credit Card fields
+    private String cardNumber;
+    private String cardHolderName;
+    private String cardExpiryDate;
+    private String cardSecurityCode;
 
-    private void processPayPalPayment() {
-        // Logic to process PayPal payment
-    }
-
-    private void processCashPayment() {
-        // Logic to process cash payment
-    }
+    // PayPal fields
+    private String paypalEmail;
 }
 
 
