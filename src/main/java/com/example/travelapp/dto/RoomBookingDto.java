@@ -1,14 +1,7 @@
-package com.example.travelapp.request;
+package com.example.travelapp.dto;
 
-import com.example.travelapp.dto.UserDto;
-import com.example.travelapp.entity.Address;
-import com.example.travelapp.entity.Payment;
-import com.example.travelapp.entity.Room;
-import com.example.travelapp.entity.User;
 import com.example.travelapp.enums.BookingStatus;
-import com.example.travelapp.enums.PaymentStatus;
 import com.example.travelapp.enums.PaymentType;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,9 +10,8 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class BookingRequest {
+public class RoomBookingDto {
 
-    private int bookingId;
     private Long userId;
     private Long roomId;
 
@@ -38,9 +30,19 @@ public class BookingRequest {
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private String note;
-    private LocalDate createdDate;
-    private LocalDate lastUpdatedDate;
 
-    private Payment payment;
+    private String bookingReferenceNumber;
+    private BookingStatus bookingStatus;
 
+    private PaymentType paymentType;
+    // Credit Card fields
+    private String cardNumber;
+    private String cardHolderName;
+    private String cardExpiryDate;
+    private String cardSecurityCode;
+
+    // PayPal fields
+    private String paypalEmail;
+
+    private BigDecimal totalPrice;
 }

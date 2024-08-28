@@ -1,6 +1,6 @@
 package com.example.travelapp.service.impl;
 
-import com.example.travelapp.dto.RoomDto;
+import com.example.travelapp.dto.RoomBookingDto;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.*;
 import com.example.travelapp.enums.BookingStatus;
@@ -10,12 +10,8 @@ import com.example.travelapp.enums.RoomStatus;
 import com.example.travelapp.exceptions.BookingFailedException;
 import com.example.travelapp.exceptions.PaymentFailedException;
 import com.example.travelapp.exceptions.ResourceNotFound;
-import com.example.travelapp.mapper.PaymentMapper;
-import com.example.travelapp.repository.HotelRepository;
-import com.example.travelapp.repository.PaymentRepository;
 import com.example.travelapp.repository.RoomBookingRepository;
-import com.example.travelapp.repository.UserRepository;
-import com.example.travelapp.request.BookingRequest;
+import com.example.travelapp.response.RoomBookingResponse;
 import com.example.travelapp.service.*;
 import com.example.travelapp.utils.DTOConverter;
 import jakarta.transaction.Transactional;
@@ -44,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public void bookRoom(Long userId, Long roomId, BookingRequest bookingRequest) {
+    public RoomBookingDto bookRoom(Long userId, Long roomId, RoomBookingDto bookingRequest) {
         RoomBooking roomBooking = new RoomBooking();
 
         try {
@@ -78,27 +74,26 @@ public class BookingServiceImpl implements BookingService {
             roomBooking.setInfant(bookingRequest.getInfant());
             roomBooking.setCheckInDate(bookingRequest.getCheckInDate());
             roomBooking.setCheckOutDate(bookingRequest.getCheckOutDate());
-            roomBooking.setBookingReferenceNumber(generateReferenceNumber());
+            String referenceNumber = generateReferenceNumber();
+            roomBooking.setBookingReferenceNumber(referenceNumber);
             roomBooking.setNote(bookingRequest.getNote());
             roomBooking.setCreatedDate(LocalDate.now());
-
-            roomBooking.calculateTotalPrice();
 
             Payment payment = new Payment();
             payment.setPaymentDate(LocalDate.now());
             payment.setPaymentAmount(roomBooking.calculateTotalPrice());
 
-            switch (bookingRequest.getPayment().getPaymentType()){
+            switch (bookingRequest.getPaymentType()){
                 case CREDIT_CARD:
                     payment.setPaymentType(PaymentType.CREDIT_CARD);
-                    payment.setCardNumber(bookingRequest.getPayment().getCardNumber());
-                    payment.setCardExpiryDate(bookingRequest.getPayment().getCardExpiryDate());
-                    payment.setCardHolderName(bookingRequest.getPayment().getCardHolderName());
-                    payment.setCardSecurityCode(bookingRequest.getPayment().getCardSecurityCode());
+                    payment.setCardNumber(bookingRequest.getCardNumber());
+                    payment.setCardExpiryDate(bookingRequest.getCardExpiryDate());
+                    payment.setCardHolderName(bookingRequest.getCardHolderName());
+                    payment.setCardSecurityCode(bookingRequest.getCardSecurityCode());
                     break;
                 case PAYPAL:
                     payment.setPaymentType(PaymentType.PAYPAL);
-                    payment.setPaypalEmail(bookingRequest.getPayment().getPaypalEmail());
+                    payment.setPaypalEmail(bookingRequest.getPaypalEmail());
                     break;
                 case CASH:
                     payment.setPaymentType(PaymentType.CASH);
@@ -108,22 +103,25 @@ public class BookingServiceImpl implements BookingService {
             payment.setRoomBooking(roomBooking);
             roomBooking.setPayment(payment);
 
-            paymentService.processPayment(dtoConverter.toPaymentDto(payment));
-
             if (!paymentService.processPayment(dtoConverter.toPaymentDto(payment))) {
-                throw new PaymentFailedException("Payment failed for booking reference: " + roomBooking.getBookingReferenceNumber());
+                throw new PaymentFailedException("Payment failed for booking reference: " +
+                        roomBooking.getBookingReferenceNumber());
             }
 
             payment.setPaymentStatus(PaymentStatus.PAID);
             roomBooking.setBookingStatus(BookingStatus.CONFIRMED);
 
             room.setRoomStatus(RoomStatus.RESERVED);
+            bookingRequest.setBookingReferenceNumber(referenceNumber);
+            bookingRequest.setTotalPrice(payment.getPaymentAmount());
+            bookingRequest.setBookingStatus(roomBooking.getBookingStatus());
 
             roomBookingRepository.save(roomBooking);
 
         } catch (Exception e) {
             throw new BookingFailedException("Booking failed: " + e.getMessage(),e);
         }
+        return bookingRequest;
     }
 
     public String generateReferenceNumber(){
@@ -151,7 +149,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void calculateTotalPrice(BookingRequest bookingRequest) {
+    public void calculateTotalPrice(RoomBookingDto bookingRequest) {
 
+    }
+
+    @Override
+    public String getBookingReferenceNumber(Long bookingId) {
+        RoomBooking roomBooking = roomBookingRepository.findById(bookingId).orElse(null);
+        assert roomBooking != null;
+        return roomBooking.getBookingReferenceNumber();
     }
 }

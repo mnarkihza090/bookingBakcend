@@ -1,16 +1,24 @@
 package com.example.travelapp.utils;
 
 import com.example.travelapp.dto.ReviewDto;
+import com.example.travelapp.dto.RoomBookingDto;
 import com.example.travelapp.dto.RoomDto;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.*;
+import com.example.travelapp.repository.PaymentRepository;
+import com.example.travelapp.repository.RoomBookingRepository;
+import com.example.travelapp.repository.RoomRepository;
 import com.example.travelapp.repository.UserRepository;
 import com.example.travelapp.request.PaymentRequest;
+import com.example.travelapp.response.RoomBookingResponse;
 import com.example.travelapp.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class DTOConverter {
@@ -21,6 +29,12 @@ public class DTOConverter {
     //private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RoomBookingRepository roomBookingRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
+    private RoomRepository roomRepository;
 
 
     public User toEntity(UserDto userDto){
@@ -162,9 +176,70 @@ public class DTOConverter {
         paymentRequest.setCardSecurityCode(payment.getCardSecurityCode());
         paymentRequest.setCardNumber(payment.getCardNumber());
         paymentRequest.setPaypalEmail(payment.getPaypalEmail());
-
         return paymentRequest;
     }
+
+    public RoomBooking toRoomBooking(RoomBookingDto roomBookingDto){
+        RoomBooking roomBooking = new RoomBooking();
+        roomBooking.setCountry(roomBookingDto.getCountry());
+        roomBooking.setCity(roomBookingDto.getCity());
+        roomBooking.setState(roomBookingDto.getState());
+        roomBooking.setFirstName(roomBookingDto.getFirstName());
+        roomBooking.setLastName(roomBookingDto.getLastName());
+        roomBooking.setNote(roomBookingDto.getNote());
+        roomBooking.setEmail(roomBookingDto.getEmail());
+        roomBooking.setPhoneNumber(roomBookingDto.getPhoneNumber());
+        roomBooking.setCheckInDate(roomBookingDto.getCheckInDate());
+        roomBooking.setCheckOutDate(roomBookingDto.getCheckOutDate());
+
+
+
+        roomBooking.setBookingReferenceNumber(roomBookingDto.getBookingReferenceNumber());
+
+
+        return roomBooking;
+    }
+    public RoomBookingDto toRoombookingDto(RoomBooking roomBooking){
+        RoomBookingDto roomBookingDto = new RoomBookingDto();
+        roomBookingDto.setCountry(roomBooking.getCountry());
+        roomBookingDto.setCity(roomBooking.getCity());
+        roomBookingDto.setState(roomBooking.getState());
+        roomBookingDto.setFirstName(roomBooking.getFirstName());
+        roomBookingDto.setLastName(roomBooking.getLastName());
+        roomBookingDto.setNote(roomBooking.getNote());
+        roomBookingDto.setEmail(roomBooking.getEmail());
+        roomBookingDto.setPhoneNumber(roomBooking.getPhoneNumber());
+        roomBookingDto.setCheckInDate(roomBooking.getCheckInDate());
+        roomBookingDto.setCheckOutDate(roomBooking.getCheckOutDate());
+        roomBookingDto.setBookingReferenceNumber(roomBooking.getBookingReferenceNumber());
+
+        return roomBookingDto;
+    }
+
+    public RoomBookingResponse roomBookingResponse(RoomBookingDto roomBookingDto){
+        RoomBookingResponse roomBookingResponse = new RoomBookingResponse();
+
+
+
+        roomBookingResponse.setFirstName(roomBookingDto.getFirstName());
+        roomBookingResponse.setLastName(roomBookingDto.getLastName());
+        roomBookingResponse.setEmail(roomBookingDto.getEmail());
+        roomBookingResponse.setPhoneNumber(roomBookingDto.getPhoneNumber());
+        roomBookingResponse.setCity(roomBookingDto.getCity());
+        roomBookingResponse.setCountry(roomBookingDto.getCountry());
+        roomBookingResponse.setState(roomBookingDto.getState());
+        roomBookingResponse.setCreatedDate(LocalDate.now());
+        roomBookingResponse.setPaymentType(roomBookingDto.getPaymentType());
+        roomBookingResponse.setAddress(roomBookingDto.getAddress());
+        roomBookingResponse.setLastUpdatedDate(LocalDate.now());
+
+        roomBookingResponse.setBookingStatus(roomBookingDto.getBookingStatus());
+        roomBookingResponse.setBookingReferenceNumber(roomBookingDto.getBookingReferenceNumber());
+        roomBookingResponse.setTotalPrice(roomBookingDto.getTotalPrice());
+
+        return roomBookingResponse;
+    }
+
 
 }
 
