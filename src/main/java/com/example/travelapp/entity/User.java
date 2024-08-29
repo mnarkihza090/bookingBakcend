@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +50,11 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
 
+    //for flights
+    private String gender;
+    private String passportNumber;
+    private LocalDateTime dateOfBirth;
+    private String seatNumber;
 }
 
 

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,7 +25,10 @@ public class Hotel {
     private String location;
     @Size(min = 10,max = 1000)
     private String description;
+
     private Double pricePerPerson;
+    private BigDecimal childPrice;
+    private BigDecimal infantPrice;
 
     @OneToMany(mappedBy = "hotel",fetch = FetchType.EAGER)
     @JsonManagedReference

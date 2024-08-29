@@ -2,7 +2,6 @@ package com.example.travelapp.entity;
 
 import com.example.travelapp.enums.BookingStatus;
 import com.example.travelapp.enums.PaymentStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -11,12 +10,12 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Getter
 @Setter
-public class RoomBooking {
+public class HotelBooking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +24,10 @@ public class RoomBooking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_id")
+    private Hotel hotel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
@@ -39,6 +42,7 @@ public class RoomBooking {
     private String state;
     private String city;
     private String country;
+
     private String bookingType;
     private int children;
     private int adults;
@@ -53,12 +57,13 @@ public class RoomBooking {
     private LocalDate lastUpdatedDate;
     private String bookingReferenceNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hotel_booking_id")
-    private HotelBooking hotelBooking;
+    @OneToMany(mappedBy = "hotelBooking")
+    private List<RoomBooking> roomBookings;
 
-    @OneToOne(mappedBy = "roomBooking",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+    @OneToOne(mappedBy = "hotelBooking",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Payment payment;
+
 
     public boolean isBookingValid() {
         if (checkInDate == null || checkOutDate == null) {
@@ -90,10 +95,10 @@ public class RoomBooking {
         }
 
         BigDecimal additionalChildCharge =
-                    BigDecimal.valueOf(children).multiply(room.getChildPrice());
+                BigDecimal.valueOf(children).multiply(room.getChildPrice());
 
         BigDecimal additionalInfantCharge =
-                    BigDecimal.valueOf(infant).multiply(room.getInfantPrice());
+                BigDecimal.valueOf(infant).multiply(room.getInfantPrice());
 
         totalPrice =
                 totalPrice.add(additionalAdultCharge)
@@ -110,8 +115,17 @@ public class RoomBooking {
 
     public void cancelBooking() {
         this.payment.setPaymentStatus(PaymentStatus.CANCELLED);
+        this.bookingStatus = BookingStatus.CANCELLED;
     }
+
+
+
 }
+
+
+
+
+
 
 
 

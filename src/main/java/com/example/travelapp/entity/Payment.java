@@ -25,9 +25,13 @@ public class Payment {
     private PaymentStatus paymentStatus;
     private LocalDate paymentDate;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_booking_id")
     private RoomBooking roomBooking;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_booking_id")
+    private HotelBooking hotelBooking;
 
 
     // Credit Card fields
