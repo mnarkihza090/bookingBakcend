@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 public class RoomBookingDto {
 
+    private int bookingId;
     private Long userId;
     private Long roomId;
 
@@ -33,14 +34,13 @@ public class RoomBookingDto {
 
     private String bookingReferenceNumber;
     private BookingStatus bookingStatus;
-
     private PaymentType paymentType;
     // Credit Card fields
     private String cardNumber;
     private String cardHolderName;
     private String cardExpiryDate;
     private String cardSecurityCode;
-
+    private String bookingType;
     // PayPal fields
     private String paypalEmail;
 

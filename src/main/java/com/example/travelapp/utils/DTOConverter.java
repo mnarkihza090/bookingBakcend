@@ -201,6 +201,7 @@ public class DTOConverter {
     }
     public RoomBookingDto toRoombookingDto(RoomBooking roomBooking){
         RoomBookingDto roomBookingDto = new RoomBookingDto();
+        roomBookingDto.setBookingId(roomBooking.getBookingId());
         roomBookingDto.setCountry(roomBooking.getCountry());
         roomBookingDto.setCity(roomBooking.getCity());
         roomBookingDto.setState(roomBooking.getState());
@@ -212,6 +213,17 @@ public class DTOConverter {
         roomBookingDto.setCheckInDate(roomBooking.getCheckInDate());
         roomBookingDto.setCheckOutDate(roomBooking.getCheckOutDate());
         roomBookingDto.setBookingReferenceNumber(roomBooking.getBookingReferenceNumber());
+
+        roomBookingDto.setUserId(roomBooking.getUser().getId());
+        roomBookingDto.setRoomId(roomBooking.getRoom().getId());
+        roomBookingDto.setEmail(roomBooking.getEmail());
+        roomBookingDto.setCity(roomBooking.getCity());
+        roomBookingDto.setBookingStatus(roomBooking.getBookingStatus());
+        roomBookingDto.setAdults(roomBooking.getAdults());
+        roomBookingDto.setChildren(roomBooking.getChildren());
+        roomBookingDto.setInfant(roomBooking.getInfant());
+        roomBookingDto.setBookingType(roomBooking.getBookingType());
+        roomBookingDto.setTotalPrice(roomBooking.getTotalPrice());
 
         return roomBookingDto;
     }

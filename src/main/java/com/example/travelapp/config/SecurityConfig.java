@@ -67,6 +67,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(publicUrl).permitAll()
+                                .requestMatchers("/api/user/profile").authenticated()
+                                .requestMatchers("/api/auth/profile/my-booking").authenticated()
                         .anyRequest().authenticated()
                         );
 

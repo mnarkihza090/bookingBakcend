@@ -1,7 +1,9 @@
 package com.example.travelapp.controller;
 
 import com.example.travelapp.dto.JwtResponse;
+import com.example.travelapp.dto.RoomBookingDto;
 import com.example.travelapp.dto.UserDto;
+import com.example.travelapp.entity.Hotel;
 import com.example.travelapp.entity.User;
 import com.example.travelapp.entity.VerificationCode;
 import com.example.travelapp.entity.VerificationToken;
@@ -9,6 +11,7 @@ import com.example.travelapp.repository.VerificationTokenRepository;
 import com.example.travelapp.request.ResetPasswordRequest;
 import com.example.travelapp.request.SendResetCodeRequest;
 import com.example.travelapp.request.VerifyResetCodeRequest;
+import com.example.travelapp.response.Pagination;
 import com.example.travelapp.service.*;
 import com.example.travelapp.utils.DTOConverter;
 import com.example.travelapp.utils.JwtProvider;
@@ -17,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +55,8 @@ public class AuthController {
     private VerificationTokenRepository verificationTokenRepository;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private BookingService bookingService;
 
 
     @PostMapping("/send-reset-code")
@@ -199,5 +206,26 @@ public class AuthController {
         UserDto userDto = userService.findByEmail(currentUser.getUser().getEmail());
 
         return new ResponseEntity<>(userDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/profile/my-booking")
+    @Transactional
+    public ResponseEntity<?> getMyBooking(
+            @RequestParam(defaultValue = "0",name = "page") int pageNumber,
+            @RequestParam(defaultValue = "6",name = "size") int pageSize
+    ){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //UserDetailsImpl currentUser= (UserDetailsImpl) authentication.getPrincipal();
+        String currentUser = authentication.getName();
+        UserDto userDto = userService.findByEmail(currentUser);
+
+        Page<RoomBookingDto> myBookings = bookingService.findByUserId(PageRequest.of(pageNumber,pageSize),userDto.getId());
+
+        return ResponseEntity.ok(new Pagination<List<RoomBookingDto>>(
+                myBookings.getTotalPages(),
+                myBookings.getNumber(),
+                myBookings.getSize(),
+                myBookings.getContent(),
+                myBookings.getTotalElements()));
     }
 }

@@ -16,11 +16,15 @@ import com.example.travelapp.service.*;
 import com.example.travelapp.utils.DTOConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -78,7 +82,7 @@ public class BookingServiceImpl implements BookingService {
             roomBooking.setBookingReferenceNumber(referenceNumber);
             roomBooking.setNote(bookingRequest.getNote());
             roomBooking.setCreatedDate(LocalDate.now());
-
+            roomBooking.setBookingType("Room");
             Payment payment = new Payment();
             payment.setPaymentDate(LocalDate.now());
             payment.setPaymentAmount(roomBooking.calculateTotalPrice());
@@ -158,5 +162,16 @@ public class BookingServiceImpl implements BookingService {
         RoomBooking roomBooking = roomBookingRepository.findById(bookingId).orElse(null);
         assert roomBooking != null;
         return roomBooking.getBookingReferenceNumber();
+    }
+
+    @Override
+    public Page<RoomBookingDto> findByUserId(Pageable pageable,Long userId) {
+        Page<RoomBooking> myBookings = roomBookingRepository.findByUserId(pageable,userId);
+
+        Page<RoomBookingDto> myBooks =
+                myBookings
+                        .map(booking -> dtoConverter.toRoombookingDto(booking));
+
+        return myBooks;
     }
 }

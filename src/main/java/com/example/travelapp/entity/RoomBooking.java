@@ -2,6 +2,7 @@ package com.example.travelapp.entity;
 
 import com.example.travelapp.enums.BookingStatus;
 import com.example.travelapp.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Getter
 @Setter
@@ -38,6 +40,7 @@ public class RoomBooking {
     private String city;
     private String country;
 
+    private String bookingType;
     private int children;
     private int adults;
     private int infant;

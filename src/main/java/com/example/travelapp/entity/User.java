@@ -1,5 +1,6 @@
 package com.example.travelapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class User {
     private String confirmPassword;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<RoomBooking> bookings = new ArrayList<RoomBooking>();
 
     @OneToMany(mappedBy = "user")
