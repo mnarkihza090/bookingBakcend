@@ -1,9 +1,13 @@
-package com.example.travelapp.entity;
+package com.example.travelapp.dto;
 
-import com.example.travelapp.enums.*;
-import com.example.travelapp.service.PricingService;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
+
+import com.example.travelapp.entity.Flight;
+import com.example.travelapp.enums.FlightClass;
+import com.example.travelapp.enums.PaymentStatus;
+import com.example.travelapp.enums.PaymentType;
+import com.example.travelapp.enums.TicketType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,38 +15,29 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 @Setter
-public class FlightBooking {
+public class FlightBookingDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-    @ManyToOne
-    @JoinColumn(name = "flight_id")
-    private Flight flight;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private Long userId;
+    private Long flightId;
     private LocalDateTime travelDate;
     private int adult;
     private int children;
     private int infant;
-    // Booking Information
-    private String bookingReferenceNumber;
-    @Enumerated(EnumType.STRING)
-    private BookingStatus bookingStatus;
-    private LocalDateTime bookingDate;
 
     @Enumerated(EnumType.STRING)
     private FlightClass flightClass;
 
-   @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private TicketType ticketType;
 
+    // Booking Information
+    private String bookingReferenceNumber;
+    private String bookingStatus;
+    private LocalDateTime bookingDate;
+    private BigDecimal totalPrice;
     // Flight Information
     private String flightNumber;
     private LocalDateTime departureDate;
@@ -60,14 +55,29 @@ public class FlightBooking {
     private LocalDateTime passengerDateOfBirth;
     private String passengerPassportNumber;
     // Payment Information
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "payment_id", referencedColumnName = "id")
-    private Payment payment;
+    private PaymentType paymentType;
+    private PaymentStatus paymentStatus;
+    private LocalDateTime paymentDate;
     // Additional Information
     private String specialRequests;
     private String luggage;
-    private BigDecimal totalPrice;
-
-
+    private String checkInStatus;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

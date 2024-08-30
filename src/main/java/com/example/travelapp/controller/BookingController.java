@@ -1,5 +1,6 @@
 package com.example.travelapp.controller;
 
+import com.example.travelapp.dto.FlightBookingDto;
 import com.example.travelapp.dto.RoomBookingDto;
 import com.example.travelapp.entity.RoomBooking;
 import com.example.travelapp.response.ApiResponse;
@@ -33,8 +34,14 @@ public class BookingController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+    @PostMapping("/flight/booking")
+    public ResponseEntity<?> bookFlight(@RequestBody FlightBookingDto flightBookingDto){
 
+        FlightBookingDto flightBookingDto1 = bookingService.bookFlight(flightBookingDto.getUserId(),flightBookingDto.getFlightId(),flightBookingDto);
 
+        //return ResponseEntity.status(HttpStatus.OK).body(flightBookingDto1);
+        return ResponseEntity.ok("Flight booking successfully got");
+    }
 }
 
 

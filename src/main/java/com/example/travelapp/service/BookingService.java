@@ -1,5 +1,6 @@
 package com.example.travelapp.service;
 
+import com.example.travelapp.dto.FlightBookingDto;
 import com.example.travelapp.dto.RoomBookingDto;
 import com.example.travelapp.entity.RoomBooking;
 import com.example.travelapp.response.RoomBookingResponse;
@@ -15,4 +16,5 @@ public interface BookingService {
 
 	String getBookingReferenceNumber(Long bookingId);
 	Page<RoomBookingDto> findByUserId(Pageable pageable, Long userId);
+	FlightBookingDto bookFlight(Long userId, Long flightId,FlightBookingDto bookingDto);
 }

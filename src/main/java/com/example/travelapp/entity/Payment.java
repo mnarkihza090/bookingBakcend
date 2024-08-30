@@ -33,6 +33,9 @@ public class Payment {
     @JoinColumn(name = "hotel_booking_id")
     private HotelBooking hotelBooking;
 
+    @OneToOne
+    @JoinColumn(name = "flight_booking_id")
+    private FlightBooking flightBooking;
 
     // Credit Card fields
     private String cardNumber;

@@ -1,5 +1,6 @@
 package com.example.travelapp.controller;
 
+import com.example.travelapp.dto.FlightDto;
 import com.example.travelapp.entity.Flight;
 import com.example.travelapp.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class FlightsController {
 
     @GetMapping("/flights")
     public ResponseEntity<?> getFlights(){
-        List<Flight> flights = flightService.findAll();
+        List<FlightDto> flights = flightService.findAll();
 
         return ResponseEntity.ok(flights);
     }

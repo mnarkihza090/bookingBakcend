@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,7 @@ public class SeedDataForFlights implements CommandLineRunner {
     public void run(String... args) throws Exception {
         List<Flight> flights = Arrays.asList(
                 new Flight("Turkish Airline","AirlineA_Logo.png", "Istanbul", "IST", "London", "LHR", "TK1984", "Boeing 777",
-                        LocalDateTime.of(2024, 9, 1, 14, 30), LocalDateTime.of(2024, 9, 1, 16, 45), "2h 15m",
+                        LocalDateTime.of(2024, 9, 1,17,10), LocalDateTime.of(2024, 9, 1, 16, 45), "2h 15m",
                         new BigDecimal("500.00"), new BigDecimal("450.00"), 10, "Non-refundable", "1 baggage 23kg"),
                 new Flight("Fly Emirates Airline","AirlineB_Logo.png", "New York", "JFK", "Paris", "CDG", "AF007", "Airbus A380",
                         LocalDateTime.of(2024, 9, 5, 8, 0), LocalDateTime.of(2024, 9, 5, 16, 30), "8h 30m",

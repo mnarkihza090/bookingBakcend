@@ -1,15 +1,15 @@
 package com.example.travelapp.service.impl;
 
+import com.example.travelapp.dto.FlightBookingDto;
+import com.example.travelapp.dto.FlightDto;
 import com.example.travelapp.dto.RoomBookingDto;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.*;
-import com.example.travelapp.enums.BookingStatus;
-import com.example.travelapp.enums.PaymentStatus;
-import com.example.travelapp.enums.PaymentType;
-import com.example.travelapp.enums.RoomStatus;
+import com.example.travelapp.enums.*;
 import com.example.travelapp.exceptions.BookingFailedException;
 import com.example.travelapp.exceptions.PaymentFailedException;
 import com.example.travelapp.exceptions.ResourceNotFound;
+import com.example.travelapp.repository.FlightBookingRepository;
 import com.example.travelapp.repository.RoomBookingRepository;
 import com.example.travelapp.response.RoomBookingResponse;
 import com.example.travelapp.service.*;
@@ -20,10 +20,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +44,12 @@ public class BookingServiceImpl implements BookingService {
     private DTOConverter dtoConverter;
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private FlightService flightService;
+    @Autowired
+    private FlightBookingRepository flightBookingRepository;
+    @Autowired
+    private PricingService pricingService;
 
     @Transactional
     @Override
@@ -174,4 +183,93 @@ public class BookingServiceImpl implements BookingService {
 
         return myBooks;
     }
+
+    @Transactional
+    @Override
+    public FlightBookingDto bookFlight(Long userId, Long flightId, FlightBookingDto bookingDto) {
+
+        UserDto userDto = userService.findByUserId(userId);
+        FlightDto flightDto = flightService.findById(flightId);
+        FlightBooking flightBooking = new FlightBooking();
+
+        if (flightDto == null){
+            throw new ResourceNotFound("Flight not found");
+        }
+
+        /*BigDecimal totalPrice =
+                ticket.calculateFinalPrice(bookingDto.getAdult(), bookingDto.getChildren(), bookingDto.getInfant()); */
+
+        flightBooking.setTicketType(bookingDto.getTicketType());
+        flightBooking.setFlightClass(bookingDto.getFlightClass());
+        flightBooking.setAdult(bookingDto.getAdult());
+        flightBooking.setChildren(bookingDto.getChildren());
+        flightBooking.setInfant(bookingDto.getInfant());
+
+        BigDecimal totalPrice = PricingService.calculateTotalPrice(bookingDto.getFlightClass(),bookingDto.getTicketType(), bookingDto.getAdult(), bookingDto.getChildren(), bookingDto.getInfant());
+
+        flightBooking.setFlight(dtoConverter.toFlightEntity(flightDto));
+        flightBooking.setUser(dtoConverter.toEntity(userDto));
+        flightBooking.setFlightNumber(flightDto.getFlightNumber());
+        flightBooking.setBookingStatus(BookingStatus.CONFIRMED);
+
+        flightBooking.setTravelDate(bookingDto.getTravelDate());
+        flightBooking.setAirline(bookingDto.getAirline());
+        flightBooking.setDepartureAirport(flightDto.getFromAirport());
+        flightBooking.setArrivalAirport(flightDto.getFromAirport());
+        flightBooking.setDepartureDate(flightDto.getDepartureTime());
+        flightBooking.setArrivalDate(flightDto.getArrivalTime());
+        flightBooking.setPassengerFirstName(bookingDto.getPassengerFirstName());
+        flightBooking.setPassengerLastName(bookingDto.getPassengerLastName());
+        flightBooking.setPassengerEmail(bookingDto.getPassengerEmail());
+        flightBooking.setPassengerPhoneNumber(bookingDto.getPassengerPhoneNumber());
+        flightBooking.setPassengerDateOfBirth(bookingDto.getPassengerDateOfBirth());
+        flightBooking.setPassengerPassportNumber(bookingDto.getPassengerPassportNumber());
+        flightBooking.setBookingDate(LocalDateTime.now());
+        flightBooking.setTotalPrice(totalPrice);
+        //flightBooking.setTotalPrice(totalPrice);
+
+        String bookingReference = generateBookingReference();
+        flightBooking.setBookingReferenceNumber(bookingReference);
+
+        Payment payment = new Payment();
+        payment.setFlightBooking(flightBooking);
+        payment.setPaymentDate(LocalDate.now());
+        payment.setPaymentStatus(PaymentStatus.PAID);
+        payment.setPaymentAmount(totalPrice);
+        paymentService.savePayment(payment);
+
+
+        flightBooking.setPayment(payment);
+        flightBookingRepository.save(flightBooking);
+
+        return dtoConverter.toFlightBookingDto(flightBooking);
+    }
+
+    private String generateBookingReference() {
+        return UUID.randomUUID().toString();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

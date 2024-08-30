@@ -1,9 +1,6 @@
 package com.example.travelapp.utils;
 
-import com.example.travelapp.dto.ReviewDto;
-import com.example.travelapp.dto.RoomBookingDto;
-import com.example.travelapp.dto.RoomDto;
-import com.example.travelapp.dto.UserDto;
+import com.example.travelapp.dto.*;
 import com.example.travelapp.entity.*;
 import com.example.travelapp.repository.PaymentRepository;
 import com.example.travelapp.repository.RoomBookingRepository;
@@ -252,7 +249,87 @@ public class DTOConverter {
         return roomBookingResponse;
     }
 
+    public FlightDto toFlightDto(Flight flight){
+        FlightDto flightDto = new FlightDto();
+        flightDto.setFlightId(flight.getFlightId());
+        flightDto.setAirlineName(flight.getAirlineName());
+        flightDto.setFlightNumber(flight.getFlightNumber());
+        flightDto.setFromAirport(flight.getFromAirport());
+        flightDto.setToAirport(flight.getToAirport());
+        flightDto.setDepartureTime(flight.getDepartureTime());
+        flightDto.setArrivalTime(flight.getArrivalTime());
+        flightDto.setDepartureTime(flight.getDepartureTime());
+        flightDto.setArrivalTime(flight.getArrivalTime());
+        flightDto.setOriginalPrice(flight.getOriginalPrice());
+        flightDto.setDiscountedPrice(flight.getDiscountedPrice());
+        flightDto.setDiscountPercentage(flight.getDiscountPercentage());
+        flightDto.setRefundPolicy(flight.getRefundPolicy());
+        flightDto.setAirlineLogo(flight.getAirlineLogo());
+        flightDto.setFromCity(flight.getFromCity());
+        flightDto.setToCity(flight.getToCity());
+        flightDto.setAirplaneType(flight.getAirplaneType());
+        flightDto.setFlightDuration(flight.getFlightDuration());
+        flightDto.setBaggageInfo(flight.getBaggageInfo());
 
+        return flightDto;
+    }
+    public Flight toFlightEntity(FlightDto flightDto){
+        Flight flight = new Flight();
+        flight.setFlightId(flightDto.getFlightId());
+        flight.setAirlineName(flightDto.getAirlineName());
+        flight.setFlightNumber(flightDto.getFlightNumber());
+        flight.setFromAirport(flightDto.getFromAirport());
+        flight.setToAirport(flightDto.getToAirport());
+        flight.setDepartureTime(flightDto.getDepartureTime());
+        flight.setArrivalTime(flightDto.getArrivalTime());
+        flight.setDepartureTime(flightDto.getDepartureTime());
+        flight.setArrivalTime(flightDto.getArrivalTime());
+        flight.setOriginalPrice(flightDto.getOriginalPrice());
+        flight.setDiscountedPrice(flightDto.getDiscountedPrice());
+        flight.setDiscountPercentage(flightDto.getDiscountPercentage());
+        flight.setRefundPolicy(flightDto.getRefundPolicy());
+        flight.setAirlineLogo(flightDto.getAirlineLogo());
+
+        return flight;
+    }
+
+    public FlightBooking toFlightBooking(FlightBookingDto flightBookingDto){
+        FlightBooking flightBooking = new FlightBooking();
+        flightBooking.setPassengerFirstName(flightBookingDto.getPassengerFirstName());
+        flightBooking.setPassengerLastName(flightBookingDto.getPassengerLastName());
+        flightBooking.setPassengerEmail(flightBookingDto.getPassengerEmail());
+        flightBooking.setBookingId(flightBookingDto.getBookingId());
+        flightBooking.setPassengerPassportNumber(flightBooking.getPassengerPhoneNumber());
+        flightBooking.setPassengerPhoneNumber(flightBookingDto.getPassengerPhoneNumber());
+        flightBooking.setArrivalDate(flightBookingDto.getArrivalDate());
+        flightBooking.setDepartureDate(flightBookingDto.getDepartureDate());
+        flightBooking.setArrivalAirport(flightBookingDto.getArrivalAirport());
+        flightBooking.setDepartureAirport(flightBookingDto.getDepartureAirport());
+        flightBooking.setFlightNumber(flightBookingDto.getFlightNumber());
+        flightBooking.setAdult(flightBookingDto.getAdult());
+        flightBooking.setChildren(flightBookingDto.getChildren());
+        flightBooking.setInfant(flightBookingDto.getInfant());
+
+
+        return flightBooking;
+    }
+
+    public FlightBookingDto toFlightBookingDto(FlightBooking flightBooking){
+        FlightBookingDto flightBookingDto = new FlightBookingDto();
+        flightBookingDto.setPassengerFirstName(flightBooking.getPassengerFirstName());
+        flightBookingDto.setPassengerLastName(flightBooking.getPassengerLastName());
+        flightBookingDto.setPassengerEmail(flightBooking.getPassengerEmail());
+        flightBookingDto.setBookingId(flightBooking.getBookingId());
+        flightBookingDto.setPassengerPassportNumber(flightBooking.getPassengerPassportNumber());
+        flightBookingDto.setPassengerPhoneNumber(flightBooking.getPassengerPhoneNumber());
+        flightBookingDto.setArrivalDate(flightBooking.getArrivalDate());
+        flightBookingDto.setDepartureDate(flightBooking.getDepartureDate());
+        flightBookingDto.setArrivalAirport(flightBooking.getArrivalAirport());
+        flightBookingDto.setDepartureAirport(flightBooking.getFlight().getFromAirport());
+        flightBookingDto.setFlightNumber(flightBooking.getFlightNumber());
+
+        return flightBookingDto;
+    }
 }
 
 

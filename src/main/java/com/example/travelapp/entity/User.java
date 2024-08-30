@@ -28,6 +28,9 @@ public class User {
     private String password;
     private String confirmPassword;
 
+    @OneToMany(mappedBy = "user")
+    private List<FlightBooking> flightBookings;
+
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JsonIgnore
     private List<RoomBooking> bookings = new ArrayList<RoomBooking>();
@@ -40,6 +43,12 @@ public class User {
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private VerificationToken verificationToken;
+
+    @ManyToMany
+    @JoinTable(name = "flight_users",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "flight_id"))
+    private List<Flight> flights;
 
     private String profilePicture;
 
