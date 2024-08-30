@@ -17,6 +17,7 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int flightId;
     private String airlineLogo;
+    private String airlineName;
     private String fromCity;
     private String fromAirport;
     private String toCity;
@@ -35,11 +36,12 @@ public class Flight {
     public Flight() {
     }
 
-    public Flight(String airlineLogo, String fromCity, String fromAirport, String toCity, String toAirport,
+    public Flight(String airlineName,String airlineLogo, String fromCity, String fromAirport, String toCity, String toAirport,
                   String flightNumber, String airplaneType, LocalDateTime departureTime,
                   LocalDateTime arrivalTime, String flightDuration, BigDecimal originalPrice,
                   BigDecimal discountedPrice, int discountPercentage, String refundPolicy,
                   String baggageInfo) {
+        this.airlineName = airlineName;
         this.airlineLogo = airlineLogo;
         this.fromCity = fromCity;
         this.fromAirport = fromAirport;

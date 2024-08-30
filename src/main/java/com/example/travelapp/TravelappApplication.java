@@ -16,5 +16,4 @@ public class TravelappApplication {
 		SpringApplication.run(TravelappApplication.class, args);
 	}
 
-
 }
