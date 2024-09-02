@@ -6,7 +6,6 @@ import com.example.travelapp.repository.PaymentRepository;
 import com.example.travelapp.repository.RoomBookingRepository;
 import com.example.travelapp.repository.RoomRepository;
 import com.example.travelapp.repository.UserRepository;
-import com.example.travelapp.request.PaymentRequest;
 import com.example.travelapp.response.RoomBookingResponse;
 import com.example.travelapp.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,35 +144,35 @@ public class DTOConverter {
         return roomDto;
     }
 
-    public Payment toPaymentEntity(PaymentRequest paymentRequest){
+    public Payment toPaymentEntity(PaymentDto paymentDto){
         Payment payment = new Payment();
-        payment.setCardNumber(paymentRequest.getCardNumber());
-        payment.setPaymentType(paymentRequest.getPaymentType());
-        payment.setPaymentStatus(paymentRequest.getPaymentStatus());
-        payment.setPaymentAmount(paymentRequest.getPaymentAmount());
-        payment.setPaymentDate(paymentRequest.getPaymentDate());
-        payment.setCardExpiryDate(paymentRequest.getCardExpiryDate());
-        payment.setCardHolderName(paymentRequest.getCardHolderName());
-        payment.setCardSecurityCode(paymentRequest.getCardSecurityCode());
-        payment.setCardNumber(paymentRequest.getCardNumber());
-        payment.setPaypalEmail(payment.getPaypalEmail());
+        payment.setCardNumber(paymentDto.getCardNumber());
+        payment.setPaymentType(paymentDto.getPaymentType());
+        payment.setPaymentStatus(paymentDto.getPaymentStatus());
+        payment.setPaymentAmount(paymentDto.getPaymentAmount());
+        payment.setPaymentDate(paymentDto.getPaymentDate());
+        payment.setCardExpiryDate(paymentDto.getCardExpiryDate());
+        payment.setCardHolderName(paymentDto.getCardHolderName());
+        payment.setCardSecurityCode(paymentDto.getCardSecurityCode());
+        payment.setCardNumber(paymentDto.getCardNumber());
+        payment.setPaypalEmail(paymentDto.getPaypalEmail());
 
         return payment;
     }
 
-    public PaymentRequest toPaymentDto(Payment payment){
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setCardNumber(payment.getCardNumber());
-        paymentRequest.setPaymentType(payment.getPaymentType());
-        paymentRequest.setPaymentStatus(payment.getPaymentStatus());
-        paymentRequest.setPaymentAmount(payment.getPaymentAmount());
-        paymentRequest.setPaymentDate(payment.getPaymentDate());
-        paymentRequest.setCardExpiryDate(payment.getCardExpiryDate());
-        paymentRequest.setCardHolderName(payment.getCardHolderName());
-        paymentRequest.setCardSecurityCode(payment.getCardSecurityCode());
-        paymentRequest.setCardNumber(payment.getCardNumber());
-        paymentRequest.setPaypalEmail(payment.getPaypalEmail());
-        return paymentRequest;
+    public PaymentDto toPaymentDto(Payment payment){
+        PaymentDto paymentDto = new PaymentDto();
+        paymentDto.setCardNumber(payment.getCardNumber());
+        paymentDto.setPaymentType(payment.getPaymentType());
+        paymentDto.setPaymentStatus(payment.getPaymentStatus());
+        paymentDto.setPaymentAmount(payment.getPaymentAmount());
+        paymentDto.setPaymentDate(payment.getPaymentDate());
+        paymentDto.setCardExpiryDate(payment.getCardExpiryDate());
+        paymentDto.setCardHolderName(payment.getCardHolderName());
+        paymentDto.setCardSecurityCode(payment.getCardSecurityCode());
+        paymentDto.setCardNumber(payment.getCardNumber());
+        paymentDto.setPaypalEmail(payment.getPaypalEmail());
+        return paymentDto;
     }
 
     public RoomBooking toRoomBooking(RoomBookingDto roomBookingDto){
@@ -270,6 +269,8 @@ public class DTOConverter {
         flightDto.setAirplaneType(flight.getAirplaneType());
         flightDto.setFlightDuration(flight.getFlightDuration());
         flightDto.setBaggageInfo(flight.getBaggageInfo());
+        flightDto.setRefundable(flight.isRefundable());
+        flightDto.setSeatAvailability(flight.getSeatAvailability());
 
         return flightDto;
     }
@@ -299,7 +300,8 @@ public class DTOConverter {
         flightBooking.setPassengerLastName(flightBookingDto.getPassengerLastName());
         flightBooking.setPassengerEmail(flightBookingDto.getPassengerEmail());
         flightBooking.setBookingId(flightBookingDto.getBookingId());
-        flightBooking.setPassengerPassportNumber(flightBooking.getPassengerPhoneNumber());
+        flightBooking.setPassportExpiry(flightBookingDto.getPassengerPasswordExpiry());
+        flightBooking.setPassengerPassportNumber(flightBookingDto.getPassengerPassportNumber());
         flightBooking.setPassengerPhoneNumber(flightBookingDto.getPassengerPhoneNumber());
         flightBooking.setArrivalDate(flightBookingDto.getArrivalDate());
         flightBooking.setDepartureDate(flightBookingDto.getDepartureDate());
@@ -309,13 +311,40 @@ public class DTOConverter {
         flightBooking.setAdult(flightBookingDto.getAdult());
         flightBooking.setChildren(flightBookingDto.getChildren());
         flightBooking.setInfant(flightBookingDto.getInfant());
-
+        flightBooking.setPassengerPassportCountry(flightBookingDto.getPassengerPassportCountry());
+        flightBooking.setPassengerTitle(flightBookingDto.getPassengerTitle());
+        flightBooking.setPassengerDateOfBirth(flightBookingDto.getPassengerDateOfBirth());
 
         return flightBooking;
     }
 
     public FlightBookingDto toFlightBookingDto(FlightBooking flightBooking){
         FlightBookingDto flightBookingDto = new FlightBookingDto();
+
+        flightBookingDto.setFlightId((long) flightBooking.getFlight().getFlightId());
+        flightBookingDto.setTravelDate(flightBooking.getTravelDate());
+        flightBookingDto.setFlightClass(flightBooking.getFlightClass());
+        flightBookingDto.setTicketType(flightBooking.getTicketType());
+        flightBookingDto.setBookingReferenceNumber(flightBooking.getBookingReferenceNumber());
+        flightBookingDto.setBookingStatus(String.valueOf(flightBooking.getBookingStatus()));
+        flightBookingDto.setBookingDate(flightBooking.getBookingDate());
+        flightBookingDto.setTotalPrice(flightBooking.getTotalPrice());
+        flightBookingDto.setPassengerPasswordExpiry(flightBooking.getPassportExpiry());
+        flightBookingDto.setAirline(flightBooking.getAirline());
+        flightBookingDto.setPassengerTitle(flightBooking.getPassengerTitle());
+        flightBookingDto.setPassengerNationality(flightBooking.getPassengerNationality());
+        flightBookingDto.setPaymentType(flightBooking.getPayment().getPaymentType());
+        flightBookingDto.setPassengerPassportCountry(flightBooking.getPassengerPassportCountry());
+        flightBookingDto.setCardExpiryDate(flightBooking.getPayment().getCardExpiryDate());
+        flightBookingDto.setCardNumber(flightBooking.getPayment().getCardNumber());
+        flightBookingDto.setCardHolderName(flightBooking.getPayment().getCardHolderName());
+        flightBookingDto.setPaymentStatus(flightBooking.getPayment().getPaymentStatus());
+        flightBookingDto.setCardSecurityCode(flightBooking.getPayment().getCardSecurityCode());
+
+        flightBookingDto.setPaymentDate(flightBooking.getPayment().getPaymentDate());
+
+
+        flightBookingDto.setUserId(flightBooking.getUser().getId());
         flightBookingDto.setPassengerFirstName(flightBooking.getPassengerFirstName());
         flightBookingDto.setPassengerLastName(flightBooking.getPassengerLastName());
         flightBookingDto.setPassengerEmail(flightBooking.getPassengerEmail());
@@ -327,6 +356,9 @@ public class DTOConverter {
         flightBookingDto.setArrivalAirport(flightBooking.getArrivalAirport());
         flightBookingDto.setDepartureAirport(flightBooking.getFlight().getFromAirport());
         flightBookingDto.setFlightNumber(flightBooking.getFlightNumber());
+        flightBookingDto.setPassengerPassportCountry(flightBooking.getPassengerPassportCountry());
+        flightBookingDto.setPassengerTitle(flightBooking.getPassengerTitle());
+        flightBookingDto.setPassengerDateOfBirth(flightBooking.getPassengerDateOfBirth());
 
         return flightBookingDto;
     }

@@ -2,12 +2,15 @@ package com.example.travelapp.entity;
 
 import com.example.travelapp.enums.*;
 import com.example.travelapp.service.PricingService;
+import com.example.travelapp.util.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 
@@ -26,7 +29,6 @@ public class FlightBooking {
     @JoinColumn(name = "flight_id")
     private Flight flight;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime travelDate;
     private int adult;
     private int children;
@@ -51,14 +53,18 @@ public class FlightBooking {
     private String arrivalAirport;
     private String airline;
     private String seatNumber;
-    private String classType;
     // Passenger Information
+    private String passengerTitle;
     private String passengerFirstName;
     private String passengerLastName;
     private String passengerEmail;
+    private String passengerNationality;
     private String passengerPhoneNumber;
     private LocalDateTime passengerDateOfBirth;
     private String passengerPassportNumber;
+    private String passengerPassportCountry;
+    private String passportExpiry;
+
     // Payment Information
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id", referencedColumnName = "id")

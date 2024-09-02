@@ -6,6 +6,8 @@ import com.example.travelapp.enums.FlightClass;
 import com.example.travelapp.enums.PaymentStatus;
 import com.example.travelapp.enums.PaymentType;
 import com.example.travelapp.enums.TicketType;
+import com.example.travelapp.util.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
@@ -22,6 +24,7 @@ public class FlightBookingDto {
     private Long bookingId;
     private Long userId;
     private Long flightId;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime travelDate;
     private int adult;
     private int children;
@@ -46,16 +49,26 @@ public class FlightBookingDto {
     private String arrivalAirport;
     private String airline;
     private String seatNumber;
-    private String classType;
     // Passenger Information
+    private String passengerTitle;
     private String passengerFirstName;
     private String passengerLastName;
     private String passengerEmail;
+    private String passengerNationality;
     private String passengerPhoneNumber;
+    private String passengerPasswordExpiry;
+    private String passengerPassportCountry;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime passengerDateOfBirth;
     private String passengerPassportNumber;
     // Payment Information
+
     private PaymentType paymentType;
+    private String cardNumber;
+    private String cardHolderName;
+    private String cardExpiryDate;
+    private String cardSecurityCode;
+
     private PaymentStatus paymentStatus;
     private LocalDateTime paymentDate;
     // Additional Information

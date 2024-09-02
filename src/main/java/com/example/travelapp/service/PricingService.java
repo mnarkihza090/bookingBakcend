@@ -12,52 +12,10 @@ import java.math.RoundingMode;
 @Service
 public class PricingService {
 
-    /*public static double calculatePrice(FlightClass flightClass, TicketType ticketType){
+    // Constants for tax and fee rates
+    private static final BigDecimal TAX_RATE = BigDecimal.valueOf(0.10);
+    private static final BigDecimal FEE_RATE = BigDecimal.valueOf(0.20);
 
-        double basePrice = 0.0;
-        double classMultiplier = 1.0;
-        double ticketTypeMultiplier = 1.0;
-
-        switch (flightClass){
-            case ECONOMY:
-                classMultiplier = 0.9;
-                break;
-            case BUSINESS:
-                classMultiplier = 1.2;
-                break;
-            case FIRST_CLASS:
-                classMultiplier = 1.5;
-                break;
-        }
-
-        switch (ticketType){
-            case BASIC:
-                ticketTypeMultiplier = 100;
-                break;
-            case FLEX:
-                ticketTypeMultiplier = 600;
-                break;
-            case PREMIUM:
-                ticketTypeMultiplier = 800;
-                break;
-        }
-
-        basePrice = 100.0; // Base price for a single ticket
-        basePrice *= classMultiplier;
-        basePrice *= ticketTypeMultiplier;
-
-        return basePrice;
-    }
-
-    public static double calculateBasePrice(FlightClass flightClass,TicketType ticketType,int adult,int children,int infant){
-        double basePrice = calculatePrice(flightClass,ticketType);
-
-        double totalAdultPrice = basePrice * adult;
-        double totalChildPrice = basePrice* 0.5 * children; // discount %50 for children
-        double totalInfantPrice = basePrice * 0.1 *infant; // discount %90 for infant
-
-        return totalAdultPrice + totalChildPrice + totalInfantPrice;
-    } */
     public static BigDecimal calculateBasePrice(FlightClass flightClass, TicketType ticketType) {
         BigDecimal basePrice = BigDecimal.ZERO;
 
@@ -92,14 +50,31 @@ public class PricingService {
                                                  int adultCount, int childrenCount, int infantCount) {
         BigDecimal basePrice = calculateBasePrice(flightClass, ticketType);
 
-        BigDecimal totalAdultPrice = basePrice.multiply(BigDecimal.valueOf(adultCount));
-        BigDecimal totalChildrenPrice = basePrice.multiply(BigDecimal.valueOf(0.5)).multiply(BigDecimal.valueOf(childrenCount));  // Çocuklar için %50 indirim
-        BigDecimal totalInfantPrice = basePrice.multiply(BigDecimal.valueOf(0.1)).multiply(BigDecimal.valueOf(infantCount));      // Bebekler için %90 indirim
+        BigDecimal tax = basePrice.multiply(TAX_RATE);
+        BigDecimal fee = basePrice.multiply(FEE_RATE);
+
+        BigDecimal totalAdultPrice = basePrice.add(tax).add(fee).multiply(BigDecimal.valueOf(adultCount));
+        BigDecimal totalChildrenPrice = basePrice.add(tax).add(fee)
+                .multiply(BigDecimal.valueOf(0.5))
+                .multiply(BigDecimal.valueOf(childrenCount));  // 50% discount for children
+        BigDecimal totalInfantPrice = basePrice.add(tax).add(fee)
+                .multiply(BigDecimal.valueOf(0.1))
+                .multiply(BigDecimal.valueOf(infantCount));    // 90% discount for infants
 
         BigDecimal totalPrice = totalAdultPrice.add(totalChildrenPrice).add(totalInfantPrice);
         return totalPrice.setScale(2, RoundingMode.HALF_UP);
     }
 
+    public static BigDecimal calculateFlightPrice(Flight flight){
+        BigDecimal basePrice = BigDecimal.valueOf(100);
+        BigDecimal tax = basePrice.multiply(TAX_RATE);
+        BigDecimal fee = basePrice.multiply(FEE_RATE);
+
+        BigDecimal totalPrice = basePrice.add(tax).add(fee);
+
+        flight.setOriginalPrice(totalPrice);
+        return totalPrice;
+    }
 }
 
 

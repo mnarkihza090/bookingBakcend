@@ -1,5 +1,6 @@
 package com.example.travelapp.controller;
 
+import com.example.travelapp.dto.PaymentDto;
 import com.example.travelapp.entity.Payment;
 import com.example.travelapp.request.PaymentRequest;
 import com.example.travelapp.service.PaymentService;
@@ -19,7 +20,7 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/payment")
-    public ResponseEntity<?> makePayment(@RequestBody PaymentRequest paymentRequest){
+    public ResponseEntity<?> makePayment(@RequestBody PaymentDto paymentRequest){
         boolean success = paymentService.processPayment(paymentRequest);
         if (success) {
             return new ResponseEntity<>("Payment successful!", HttpStatus.OK);
@@ -27,5 +28,4 @@ public class PaymentController {
             return new ResponseEntity<>("Payment failed!", HttpStatus.BAD_REQUEST);
         }
     }
-
 }

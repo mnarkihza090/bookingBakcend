@@ -93,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
             roomBooking.setCreatedDate(LocalDate.now());
             roomBooking.setBookingType("Room");
             Payment payment = new Payment();
-            payment.setPaymentDate(LocalDate.now());
+            payment.setPaymentDate(LocalDateTime.now());
             payment.setPaymentAmount(roomBooking.calculateTotalPrice());
 
             switch (bookingRequest.getPaymentType()){
@@ -205,7 +205,8 @@ public class BookingServiceImpl implements BookingService {
         flightBooking.setChildren(bookingDto.getChildren());
         flightBooking.setInfant(bookingDto.getInfant());
 
-        BigDecimal totalPrice = PricingService.calculateTotalPrice(bookingDto.getFlightClass(),bookingDto.getTicketType(), bookingDto.getAdult(), bookingDto.getChildren(), bookingDto.getInfant());
+        BigDecimal totalPrice =
+                PricingService.calculateTotalPrice(bookingDto.getFlightClass(),bookingDto.getTicketType(), bookingDto.getAdult(), bookingDto.getChildren(), bookingDto.getInfant());
 
         flightBooking.setFlight(dtoConverter.toFlightEntity(flightDto));
         flightBooking.setUser(dtoConverter.toEntity(userDto));
@@ -219,6 +220,10 @@ public class BookingServiceImpl implements BookingService {
         flightBooking.setDepartureDate(flightDto.getDepartureTime());
         flightBooking.setArrivalDate(flightDto.getArrivalTime());
         flightBooking.setPassengerFirstName(bookingDto.getPassengerFirstName());
+        flightBooking.setPassengerPassportCountry(bookingDto.getPassengerPassportCountry());
+        flightBooking.setPassengerTitle(bookingDto.getPassengerTitle());
+        flightBooking.setPassengerNationality(bookingDto.getPassengerNationality());
+        flightBooking.setPassportExpiry(bookingDto.getPassengerPasswordExpiry());
         flightBooking.setPassengerLastName(bookingDto.getPassengerLastName());
         flightBooking.setPassengerEmail(bookingDto.getPassengerEmail());
         flightBooking.setPassengerPhoneNumber(bookingDto.getPassengerPhoneNumber());
@@ -231,16 +236,25 @@ public class BookingServiceImpl implements BookingService {
         String bookingReference = generateBookingReference();
         flightBooking.setBookingReferenceNumber(bookingReference);
 
+
+        flightBookingRepository.save(flightBooking);
+
         Payment payment = new Payment();
         payment.setFlightBooking(flightBooking);
-        payment.setPaymentDate(LocalDate.now());
+        payment.setPaymentDate(LocalDateTime.now());
         payment.setPaymentStatus(PaymentStatus.PAID);
         payment.setPaymentAmount(totalPrice);
-        paymentService.savePayment(payment);
+        payment.setPaymentType(bookingDto.getPaymentType());
+        payment.setCardNumber(bookingDto.getCardNumber());
+        payment.setCardExpiryDate(bookingDto.getCardExpiryDate());
+        payment.setCardHolderName(bookingDto.getCardHolderName());
+        payment.setCardSecurityCode(bookingDto.getCardSecurityCode());
 
+        paymentService.savePayment(dtoConverter.toPaymentDto(payment));
 
         flightBooking.setPayment(payment);
-        flightBookingRepository.save(flightBooking);
+
+
 
         return dtoConverter.toFlightBookingDto(flightBooking);
     }

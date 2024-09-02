@@ -1,27 +1,32 @@
 package com.example.travelapp.service.impl;
 
+import com.example.travelapp.dto.PaymentDto;
 import com.example.travelapp.entity.Payment;
 import com.example.travelapp.enums.PaymentStatus;
 import com.example.travelapp.enums.PaymentType;
 import com.example.travelapp.repository.PaymentRepository;
 import com.example.travelapp.request.PaymentRequest;
 import com.example.travelapp.service.PaymentService;
+import com.example.travelapp.utils.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     private PaymentRepository paymentRepository;
+    @Autowired
+    private DTOConverter dtoConverter;
 
     @Override
-    public boolean processPayment(PaymentRequest paymentRequest) {
+    public boolean processPayment(PaymentDto paymentRequest) {
         Payment payment = new Payment();
         try {
-            payment.setPaymentDate(LocalDate.now());
+            payment.setPaymentDate(LocalDateTime.now());
             payment.setPaymentStatus(PaymentStatus.PAID);
 
             // Payment type-specific data handling
@@ -53,18 +58,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private void processCreditCardPayment(Payment payment) {
-
-        System.out.println("Processing credit card payment...");
-    }
-
-    private void processPayPalPayment(Payment payment) {
-        // PayPal işlemi için API çağrısı veya diğer mantık buraya eklenebilir
-        System.out.println("Processing PayPal payment...");
-    }
-
     @Override
-    public void savePayment(Payment payment) {
-        paymentRepository.save(payment);
+    public void savePayment(PaymentDto paymentDto) {
+        paymentRepository.save(dtoConverter.toPaymentEntity(paymentDto));
     }
+
 }

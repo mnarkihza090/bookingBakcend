@@ -6,6 +6,8 @@ import com.example.travelapp.repository.FlightRepository;
 import com.example.travelapp.service.FlightService;
 import com.example.travelapp.utils.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +22,13 @@ public class FlightServiceImpl implements FlightService {
     private DTOConverter dtoConverter;
 
     @Override
-    public List<FlightDto> findAll() {
+    public Page<FlightDto> findAll(Pageable pageable) {
 
-        List<Flight> flights = flightRepository.findAll();
+        Page<Flight> flights = flightRepository.findAll(pageable);
 
-        List<FlightDto> flightDtos = flights.stream()
-                .map(flight -> dtoConverter.toFlightDto(flight))
-                .toList();
+        Page<FlightDto> flightDtos =
+                flights
+                .map(flight -> dtoConverter.toFlightDto(flight));
 
         return flightDtos;
     }

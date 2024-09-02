@@ -28,6 +28,8 @@ public class FlightDto {
     private String flightDuration; // in hours and minutes
     private BigDecimal originalPrice;
     private BigDecimal discountedPrice;
+    private int seatAvailability;
+    private boolean refundable;
     private int discountPercentage;
     private String refundPolicy;
     private String baggageInfo;

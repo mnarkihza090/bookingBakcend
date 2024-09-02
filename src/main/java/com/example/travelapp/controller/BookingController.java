@@ -37,10 +37,11 @@ public class BookingController {
     @PostMapping("/flight/booking")
     public ResponseEntity<?> bookFlight(@RequestBody FlightBookingDto flightBookingDto){
 
-        FlightBookingDto flightBookingDto1 = bookingService.bookFlight(flightBookingDto.getUserId(),flightBookingDto.getFlightId(),flightBookingDto);
+        FlightBookingDto flightBookingDto1 =
+                bookingService.bookFlight(flightBookingDto.getUserId(),flightBookingDto.getFlightId(),flightBookingDto);
 
         //return ResponseEntity.status(HttpStatus.OK).body(flightBookingDto1);
-        return ResponseEntity.ok("Flight booking successfully got");
+        return ResponseEntity.ok(flightBookingDto1);
     }
 }
 
