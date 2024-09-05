@@ -44,7 +44,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void addReview(ReviewDto reviewDto) {
-
         /*Review newReview = new Review();
 
         User user = userRepository.getById(reviewDto.getId());

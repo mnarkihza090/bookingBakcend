@@ -259,6 +259,20 @@ public class BookingServiceImpl implements BookingService {
         return dtoConverter.toFlightBookingDto(flightBooking);
     }
 
+    @Override
+    public List<FlightBookingDto> findFlightBookingsByUserId(Long userId) {
+        List<FlightBooking> flightBookings = flightBookingRepository.findFlightBookingsByUserId(userId);
+
+        if (flightBookings.isEmpty()){
+            throw new ResourceNotFound("No flight bookings found for user");
+        }
+
+        List<FlightBookingDto> flightBookingDtos = flightBookings.stream()
+                .map(booking -> dtoConverter.toFlightBookingDto(booking)).toList();
+
+        return flightBookingDtos;
+    }
+
     private String generateBookingReference() {
         return UUID.randomUUID().toString();
     }

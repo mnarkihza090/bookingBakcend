@@ -85,7 +85,7 @@ public class HotelBooking {
 
         long daysStayed = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
 
-        BigDecimal roomPrice = BigDecimal.valueOf(room.getPricePerNight());
+        BigDecimal roomPrice = BigDecimal.valueOf(room.getOriginalPrice());
         totalPrice = roomPrice.multiply(BigDecimal.valueOf(daysStayed));
 
         BigDecimal additionalAdultCharge = BigDecimal.ZERO;

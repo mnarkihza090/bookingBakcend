@@ -22,7 +22,7 @@ public class UserDto {
     private String firstName;
     private String lastName;
     //private MultipartFile profilePicture; // for uploading image file
-    //private String profilePictureUrl; // for displaying image
+    private String profilePictureUrl; // for displaying image
     private String email;
     private String password;
     private String phoneNumber;

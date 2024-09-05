@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -42,6 +43,13 @@ public class BookingController {
 
         //return ResponseEntity.status(HttpStatus.OK).body(flightBookingDto1);
         return ResponseEntity.ok(flightBookingDto1);
+    }
+
+    @GetMapping("/flight/booking")
+    public ResponseEntity<?> getFlightBookingsFormUser(@RequestParam Long userId){
+        List<FlightBookingDto> flightBookingDtos = bookingService.findFlightBookingsByUserId(userId);
+
+        return ResponseEntity.ok(flightBookingDtos);
     }
 }
 

@@ -28,12 +28,11 @@ public class User {
     private String password;
     private String confirmPassword;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private List<FlightBooking> flightBookings;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JsonIgnore
-    private List<RoomBooking> bookings = new ArrayList<RoomBooking>();
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<RoomBooking> bookings;
 
     @OneToMany(mappedBy = "user")
     private List<Address> addresses;

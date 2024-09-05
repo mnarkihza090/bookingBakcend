@@ -12,10 +12,8 @@ public class ReviewDto {
     private Long id;
     private Long hotelId;
     private Long userId;
-
     private String profilePicture;
     private String username;
-
     private int rating;
     private String comment;
     private LocalDateTime publishedDate;

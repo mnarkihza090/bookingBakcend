@@ -2,10 +2,7 @@ package com.example.travelapp.utils;
 
 import com.example.travelapp.dto.*;
 import com.example.travelapp.entity.*;
-import com.example.travelapp.repository.PaymentRepository;
-import com.example.travelapp.repository.RoomBookingRepository;
-import com.example.travelapp.repository.RoomRepository;
-import com.example.travelapp.repository.UserRepository;
+import com.example.travelapp.repository.*;
 import com.example.travelapp.response.RoomBookingResponse;
 import com.example.travelapp.service.HotelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +17,7 @@ import java.util.UUID;
 public class DTOConverter {
 
     @Autowired
-    private HotelService hotelService;
+    private HotelRepository hotelRepository;
     //@Autowired
     //private UserService userService;
     @Autowired
@@ -32,6 +29,56 @@ public class DTOConverter {
     @Autowired
     private RoomRepository roomRepository;
 
+
+    public Hotel toHotelEntity(HotelDto hotelDto){
+        Hotel hotel = new Hotel();
+        hotel.setId(hotelDto.getId());
+        hotel.setName(hotelDto.getName());
+        hotel.setImages(hotelDto.getImages());
+        hotel.setLocation(hotelDto.getLocation());
+        hotel.setOriginalPrice(hotelDto.getPricePerPerson());
+        hotel.setRefundable(hotelDto.isRefundable());
+        hotel.setDiscountedPrice(hotelDto.getDiscountedPrice());
+        hotel.setDiscountPercentage(hotelDto.getDiscountPercentage());
+
+        hotel.setCountry(hotelDto.getCountry());
+        hotel.setAmenities(hotelDto.getAmenities());
+
+        List<Room> rooms = hotelDto.getRooms().stream().map(room -> toRoomEntity(room)).toList();
+
+        hotel.setRooms(rooms);
+
+        List<Review> reviews =
+                hotelDto.getReviews().stream().map(review-> toReviewEntity(review)).toList();
+
+        hotel.setReviews(reviews);
+
+        return hotel;
+    }
+    public HotelDto toHotelDto(Hotel hotel){
+        HotelDto hotelDto = new HotelDto();
+        hotelDto.setId(hotel.getId());
+        hotelDto.setName(hotel.getName());
+        hotelDto.setImages(hotel.getImages());
+        hotelDto.setLocation(hotel.getLocation());
+        hotelDto.setOriginalPrice(hotel.getOriginalPrice());
+        hotelDto.setRefundable(hotel.isRefundable());
+        hotelDto.setDiscountedPrice(hotel.getDiscountedPrice());
+        hotelDto.setDiscountPercentage(hotel.getDiscountPercentage());
+
+        hotelDto.setCountry(hotel.getCountry());
+        hotelDto.setAmenities(hotel.getAmenities());
+
+        List<RoomDto> roomDtos = hotel.getRooms().stream().map(roomDto -> toRoomDto(roomDto)).toList();
+
+        hotelDto.setRooms(roomDtos);
+
+        List<ReviewDto> reviewDtos = hotel.getReviews().stream().map(reviewDto-> toReviewDto(reviewDto)).toList();
+
+        hotelDto.setReviews(reviewDtos);
+
+        return hotelDto;
+    }
 
     public User toEntity(UserDto userDto){
         User user = new User();
@@ -79,13 +126,13 @@ public class DTOConverter {
 
     public Review toReviewEntity(ReviewDto reviewDto){
         Review review = new Review();
-        review.setId(reviewDto.getId());
-
         User user = userRepository.findUserById(reviewDto.getUserId());
-        Hotel hotel = hotelService.findById(reviewDto.getHotelId());
-
+        Hotel hotel = hotelRepository.findHotelById(reviewDto.getHotelId());
         review.setUser(user);
         review.setHotel(hotel);
+
+
+        review.setId(reviewDto.getId());
         review.setRating(reviewDto.getRating());
         review.setComment(reviewDto.getComment());
         review.setPublishedDate(reviewDto.getPublishedDate());
@@ -95,7 +142,7 @@ public class DTOConverter {
     public ReviewDto toReviewDto(Review review){
         ReviewDto reviewDto = new ReviewDto();
 
-        User user = userRepository.findUserById(reviewDto.getUserId());
+        User user = userRepository.findUserById(review.getUser().getId());
         UserDto userDto = toDto(user);
 
         //reviewDto.setUsername(userDto.getUsername());
@@ -116,13 +163,13 @@ public class DTOConverter {
 
     public Room toRoomEntity(RoomDto roomDto){
         Room room = new Room();
-        Hotel hotel = hotelService.findById(roomDto.getHotelId());
+        Hotel hotel = hotelRepository.findHotelById(roomDto.getHotelId());
 
         room.setId(roomDto.getId());
         room.setHotel(hotel);
         room.setRoomNumber(roomDto.getRoomNumber());
         room.setRoomType(roomDto.getRoomType());
-        room.setPricePerNight(roomDto.getPricePerNight());
+        room.setOriginalPrice(roomDto.getPricePerNight());
         room.setCapacity(roomDto.getCapacity());
         room.setDescription(roomDto.getDescription());
 
@@ -131,13 +178,13 @@ public class DTOConverter {
 
     public RoomDto toRoomDto(Room room){
         RoomDto roomDto = new RoomDto();
-        Hotel hotel = hotelService.findById(roomDto.getHotelId());
+        Hotel hotel = hotelRepository.findHotelById(room.getHotel().getId());
 
         roomDto.setId(room.getId());
-        roomDto.setHotelId(hotel.getId());
+        roomDto.setHotelId(room.getHotel().getId());
         roomDto.setRoomNumber(room.getRoomNumber());
         roomDto.setRoomType(room.getRoomType());
-        roomDto.setPricePerNight(room.getPricePerNight());
+        roomDto.setPricePerNight(room.getOriginalPrice());
         roomDto.setCapacity(room.getCapacity());
         roomDto.setDescription(room.getDescription());
 

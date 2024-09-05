@@ -1,9 +1,12 @@
 package com.example.travelapp.controller;
 
+import com.example.travelapp.dto.HotelDto;
 import com.example.travelapp.dto.ReviewDto;
+import com.example.travelapp.dto.RoomDto;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.Amenity;
 import com.example.travelapp.entity.Hotel;
+import com.example.travelapp.entity.Review;
 import com.example.travelapp.entity.Room;
 import com.example.travelapp.request.HotelSearchRequest;
 import com.example.travelapp.response.Pagination;
@@ -70,10 +73,11 @@ public class HotelController {
         int pageS = Integer.parseInt(pageSize);
 
         Pageable pageable = PageRequest.of(pageN, pageS);
-        Page<Hotel> hotels = hotelService.getHotels(pageable);
+        Page<HotelDto> hotels = hotelService.getHotels(pageable);
+
 
         return ResponseEntity.ok(
-                new Pagination<List<Hotel>>(
+                new Pagination<List<HotelDto>>(
                         hotels.getTotalPages(),
                         hotels.getNumber(),
                         hotels.getSize(),
@@ -84,22 +88,22 @@ public class HotelController {
     @GetMapping("/hotels/{hotelId}/room-detail")
     public ResponseEntity<?> getRoomDetails(@PathVariable Long hotelId){
 
-        Hotel hotel = hotelService.findById(hotelId);
+        HotelDto hotelDto = hotelService.findById(hotelId);
 
-        if (hotel == null){
+        if (hotelDto == null){
             throw new IllegalStateException("Hotel not found");
         }
 
-        List<Room> rooms = hotel.getRooms();
+        List<RoomDto> rooms = hotelDto.getRooms();
 
         return new ResponseEntity<>(rooms,HttpStatus.OK);
     }
 
     @GetMapping("/hotels/{hotelId}")
     public ResponseEntity<?> getHotel(@PathVariable("hotelId") Long hotelId){
-        Hotel hotel = hotelService.findById(hotelId);
+        HotelDto hotelDto = hotelService.findById(hotelId);
 
-        return new ResponseEntity<>(hotel,HttpStatus.OK);
+        return ResponseEntity.ok(hotelDto);
     }
 
     @PostMapping("/hotels/{hotelId}/addReview")
@@ -108,7 +112,7 @@ public class HotelController {
                                               HttpServletRequest request
             ){
 
-            Hotel hotel = hotelService.findById(hotelId);
+            HotelDto hotelDto = hotelService.findById(hotelId);
             Authentication authentication =
                     SecurityContextHolder.getContext().getAuthentication();
             String currentUser = authentication.getName();
@@ -120,11 +124,11 @@ public class HotelController {
 
         Map<String, Object> response = new HashMap<>();
 
-        if (userDto != null && hotel != null){
+        if (userDto != null && hotelDto != null){
             ReviewDto review = new ReviewDto();
 
             review.setUserId(userDto.getId());
-            review.setHotelId(hotel.getId());
+            review.setHotelId(hotelDto.getId());
             review.setRating(reviewDto.getRating());
             review.setComment(reviewDto.getComment());
             review.setPublishedDate(reviewDto.getPublishedDate());
