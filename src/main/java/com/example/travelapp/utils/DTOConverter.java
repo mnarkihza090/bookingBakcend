@@ -36,7 +36,7 @@ public class DTOConverter {
         hotel.setName(hotelDto.getName());
         hotel.setImages(hotelDto.getImages());
         hotel.setLocation(hotelDto.getLocation());
-        hotel.setOriginalPrice(hotelDto.getPricePerPerson());
+        hotel.setOriginalPrice(hotelDto.getOriginalPrice());
         hotel.setRefundable(hotelDto.isRefundable());
         hotel.setDiscountedPrice(hotelDto.getDiscountedPrice());
         hotel.setDiscountPercentage(hotelDto.getDiscountPercentage());
@@ -44,14 +44,14 @@ public class DTOConverter {
         hotel.setCountry(hotelDto.getCountry());
         hotel.setAmenities(hotelDto.getAmenities());
 
-        List<Room> rooms = hotelDto.getRooms().stream().map(room -> toRoomEntity(room)).toList();
+        List<Room> rooms = hotelDto.getRooms().stream().map(this::toRoomEntity).toList();
 
         hotel.setRooms(rooms);
 
         List<Review> reviews =
-                hotelDto.getReviews().stream().map(review-> toReviewEntity(review)).toList();
-
-        hotel.setReviews(reviews);
+                hotelDto.getReviews().stream().map(this::toReviewEntity).toList();
+        hotel.setReviews(reviews.isEmpty() ? null : reviews);
+        hotel.setAverageRating(hotelDto.getAverageRating());
 
         return hotel;
     }
@@ -65,17 +65,20 @@ public class DTOConverter {
         hotelDto.setRefundable(hotel.isRefundable());
         hotelDto.setDiscountedPrice(hotel.getDiscountedPrice());
         hotelDto.setDiscountPercentage(hotel.getDiscountPercentage());
-
         hotelDto.setCountry(hotel.getCountry());
         hotelDto.setAmenities(hotel.getAmenities());
 
-        List<RoomDto> roomDtos = hotel.getRooms().stream().map(roomDto -> toRoomDto(roomDto)).toList();
+        List<RoomDto> roomDtos = hotel.getRooms().stream().map(this::toRoomDto).toList();
 
         hotelDto.setRooms(roomDtos);
 
-        List<ReviewDto> reviewDtos = hotel.getReviews().stream().map(reviewDto-> toReviewDto(reviewDto)).toList();
+        List<ReviewDto> reviewDtos =
+                hotel.getReviews().stream().map(this::toReviewDto).toList();
 
-        hotelDto.setReviews(reviewDtos);
+        hotelDto.setReviews(reviewDtos.isEmpty() ? null : reviewDtos);
+
+        hotelDto.setAverageRating(hotel.getAverageRating());
+
 
         return hotelDto;
     }
@@ -128,9 +131,9 @@ public class DTOConverter {
         Review review = new Review();
         User user = userRepository.findUserById(reviewDto.getUserId());
         Hotel hotel = hotelRepository.findHotelById(reviewDto.getHotelId());
+
         review.setUser(user);
         review.setHotel(hotel);
-
 
         review.setId(reviewDto.getId());
         review.setRating(reviewDto.getRating());
@@ -141,13 +144,6 @@ public class DTOConverter {
     }
     public ReviewDto toReviewDto(Review review){
         ReviewDto reviewDto = new ReviewDto();
-
-        User user = userRepository.findUserById(review.getUser().getId());
-        UserDto userDto = toDto(user);
-
-        //reviewDto.setUsername(userDto.getUsername());
-        //reviewDto.setProfilePicture(userDto.get);
-
         reviewDto.setProfilePicture(review.getUser().getProfilePicture());
         reviewDto.setUsername(review.getUser().getUsername());
         reviewDto.setUserId(review.getUser().getId()); // userD
@@ -167,11 +163,18 @@ public class DTOConverter {
 
         room.setId(roomDto.getId());
         room.setHotel(hotel);
+        room.setImages(roomDto.getImages());
         room.setRoomNumber(roomDto.getRoomNumber());
         room.setRoomType(roomDto.getRoomType());
-        room.setOriginalPrice(roomDto.getPricePerNight());
+        room.setAmenities(roomDto.getAmenities());
+        room.setLocation(roomDto.getLocation());
+        room.setOriginalPrice(roomDto.getOriginalPrice());
+        room.setDiscountedPrice(roomDto.getDiscountedPrice());
+        room.setDiscountPercentage(roomDto.getDiscountPercentage());
         room.setCapacity(roomDto.getCapacity());
         room.setDescription(roomDto.getDescription());
+        room.setAvailableFrom(roomDto.getAvailableFrom());
+        room.setAvailableUntil(roomDto.getAvailableUntil());
 
         return room;
     }
@@ -181,10 +184,17 @@ public class DTOConverter {
         Hotel hotel = hotelRepository.findHotelById(room.getHotel().getId());
 
         roomDto.setId(room.getId());
+        roomDto.setImages(room.getImages());
+        roomDto.setAmenities(room.getAmenities());
+        roomDto.setLocation(room.getLocation());
+        roomDto.setAvailableFrom(room.getAvailableFrom());
+        roomDto.setAvailableUntil(room.getAvailableUntil());
         roomDto.setHotelId(room.getHotel().getId());
         roomDto.setRoomNumber(room.getRoomNumber());
         roomDto.setRoomType(room.getRoomType());
-        roomDto.setPricePerNight(room.getOriginalPrice());
+        roomDto.setOriginalPrice(room.getOriginalPrice());
+        roomDto.setDiscountedPrice(room.getDiscountedPrice());
+        roomDto.setDiscountPercentage(room.getDiscountPercentage());
         roomDto.setCapacity(room.getCapacity());
         roomDto.setDescription(room.getDescription());
 

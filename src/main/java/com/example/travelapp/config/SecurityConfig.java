@@ -44,7 +44,7 @@ public class SecurityConfig {
             "/images/**",
             "/uploads/**",
             "/uploads/hotels",
-            "/uploads/users",
+            "/uploads/users/**",
             "/resources/**",
             "/static/**",
             "/css/**",

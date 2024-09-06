@@ -21,7 +21,6 @@ public class HotelDto {
     private String location;
     private Double averageRating;
     private List<ReviewDto> reviews;
-    private Double pricePerPerson;
     private String country;
     private BigDecimal childPrice;
     private BigDecimal infantPrice;

@@ -17,11 +17,14 @@ import java.util.List;
 public class RoomDto {
     private Long id;
     private String roomNumber;
-    private Double pricePerNight;
     private String roomType;
     private String description;
     private int capacity;
-    private int standardOccupancy;
+
+    private Double originalPrice;
+    private Double discountedPrice;
+    private int discountPercentage;
+
     private BigDecimal extraAdultPrice;
     private BigDecimal extraChildPrice;
     private BigDecimal extraInfantPrice;

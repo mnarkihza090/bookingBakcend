@@ -1,9 +1,6 @@
 package com.example.travelapp.controller;
 
-import com.example.travelapp.dto.HotelDto;
-import com.example.travelapp.dto.ReviewDto;
-import com.example.travelapp.dto.RoomDto;
-import com.example.travelapp.dto.UserDto;
+import com.example.travelapp.dto.*;
 import com.example.travelapp.entity.Amenity;
 import com.example.travelapp.entity.Hotel;
 import com.example.travelapp.entity.Review;
@@ -150,11 +147,37 @@ public class HotelController {
     public ResponseEntity<?> getReviewsForHotel(@PathVariable("hotelId") Long hotelId){
 
         List<ReviewDto> reviews = reviewService.getReviewsByHotelId(hotelId);
+        HotelDto hotelDto = hotelService.findById(hotelId);
 
-        if(reviews == null){
-            return new ResponseEntity<>("No reviews found for this hotel", HttpStatus.NOT_FOUND);
+        int[] ratingCounts = new int[5];
+        double totalRatingSum = 0.0;
+
+        for (ReviewDto review : reviews){
+            int rating = review.getRating();
+            ratingCounts[review.getRating() - 1]++;
+            totalRatingSum += rating;
         }
 
-        return ResponseEntity.ok(reviews);
+        double[] ratingPercentages = new double[5];
+        int totalReviews = reviews.size();
+        double averageRating = 0.0;
+
+        if (totalReviews > 0){
+            averageRating = totalRatingSum / totalReviews;
+        }
+
+        for (int i = 0; i < ratingCounts.length; i++){
+            if (reviews.isEmpty()){
+                ratingPercentages[i] = 0.0;
+            }else {
+                ratingPercentages[i] = (double) ratingCounts[i] / reviews.size() * 100;
+            }
+        }
+
+        ReviewStatsDto reviewStats = new ReviewStatsDto(ratingPercentages, ratingCounts, totalReviews,averageRating);
+
+        HotelWithReviewsDto hotelWithReviewsDto = new HotelWithReviewsDto(hotelDto, reviewStats);
+
+        return ResponseEntity.ok(hotelWithReviewsDto);
     }
 }

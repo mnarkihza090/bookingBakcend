@@ -8,6 +8,7 @@ import com.example.travelapp.entity.Review;
 import com.example.travelapp.repository.HotelRepository;
 import com.example.travelapp.request.HotelSearchRequest;
 import com.example.travelapp.service.HotelService;
+import com.example.travelapp.service.ReviewService;
 import com.example.travelapp.utils.DTOConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,6 +27,8 @@ public class HotelServiceImpl implements HotelService {
     private HotelRepository hotelRepository;
     @Autowired
     private DTOConverter dtoConverter;
+    @Autowired
+    private ReviewService reviewService;
 
     //@Cacheable("hotels")
     @Override
@@ -46,10 +49,10 @@ public class HotelServiceImpl implements HotelService {
             hotelDto.setName(hotel.getName());
             hotelDto.setLocation(hotel.getLocation());
             hotelDto.setId(hotel.getId());
-            hotelDto.setAverageRating(averageRating);
+            //hotelDto.setAverageRating(averageRating);
             hotelDto.setImages(hotel.getImages());
             hotelDto.setAmenities(hotel.getAmenities());
-            hotelDto.setPricePerPerson(hotel.getOriginalPrice());
+            hotelDto.setOriginalPrice(hotel.getOriginalPrice());
 
             List<RoomDto> roomDtos = hotel.getRooms().stream().map(room->dtoConverter.toRoomDto(room))
                             .toList();
@@ -75,8 +78,9 @@ public class HotelServiceImpl implements HotelService {
         }
         HotelDto hotelDto = dtoConverter.toHotelDto(hotel);
 
+        double averageRating = reviewService.getAverageRating(hotelDto.getId());
 
-
+        hotelDto.setAverageRating(averageRating == 0.0 ? 0.0 : averageRating);
 
         return hotelDto;
     }

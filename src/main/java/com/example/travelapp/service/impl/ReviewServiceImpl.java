@@ -1,5 +1,6 @@
 package com.example.travelapp.service.impl;
 
+import com.example.travelapp.dto.HotelDto;
 import com.example.travelapp.dto.ReviewDto;
 import com.example.travelapp.dto.UserDto;
 import com.example.travelapp.entity.Hotel;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -56,6 +59,26 @@ public class ReviewServiceImpl implements ReviewService {
         newReview.setPublishedDate(reviewDto.getPublishedDate());*/
 
         reviewRepository.save(dtoConverter.toReviewEntity(reviewDto));
+    }
+
+    @Override
+    public Map<Integer, Long> getRatingCountsByHotelId(HotelDto hotelDto) {
+        Hotel hotel = dtoConverter.toHotelEntity(hotelDto);
+
+        var counting = reviewRepository.findByHotel(hotel)
+                .stream()
+                .collect(Collectors.groupingBy(Review::getRating,Collectors.counting()));
+
+        return counting;
+    }
+
+    @Override
+    public double getAverageRating(Long hotelId) {
+        List<Review> reviews = reviewRepository.findReviewsByHotelId(hotelId);
+
+        List<ReviewDto> reviewDtos = reviews.stream().map(review -> dtoConverter.toReviewDto(review)).toList();
+
+        return reviewDtos.stream().mapToDouble(ReviewDto::getRating).average().orElse(0.0);
     }
 }
 

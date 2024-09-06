@@ -37,17 +37,17 @@ public class Hotel {
     private int discountPercentage;
 
     @OneToMany(mappedBy = "hotel",fetch = FetchType.EAGER)
-    @JsonIgnore
     private List<Room> rooms;
 
     @ElementCollection
     private List<String> images;
     @ElementCollection
     private List<Amenity> amenities;
-
     @OneToMany(mappedBy = "hotel",fetch = FetchType.LAZY)
-    //@JsonIgnore
+    @JsonManagedReference
     private List<Review> reviews;
+
+    private Double averageRating;
 
     public Hotel() {
     }

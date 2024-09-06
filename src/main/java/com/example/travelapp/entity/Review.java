@@ -16,20 +16,17 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "hotel_id")
-    @JsonIgnore
+    @JsonBackReference
     public Hotel hotel;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     public User user;
     private int rating;
     private String comment;
