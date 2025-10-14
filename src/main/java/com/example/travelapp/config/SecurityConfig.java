@@ -52,7 +52,11 @@ public class SecurityConfig {
             "/js/**",
             "/images/**",
             "/favicon.ico",
-            "/v2/api-docs",
+            // Swagger/OpenAPI endpoints (Springdoc v3)
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
             "/error",
     };
 
