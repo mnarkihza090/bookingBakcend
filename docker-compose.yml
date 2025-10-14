@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: travelapp-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-travelapp}
+      MYSQL_USER: ${MYSQL_USER:-travel}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-travelpass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travelapp-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Spring datasource
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE:-travelapp}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-travel}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-travelpass}
+
+      # JPA
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+
+      # Server
+      SERVER_PORT: 8080
+
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-change-me-please-change-me-32chars-min}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+
+      # Uploads
+      UPLOAD_DIR: /app/uploads
+
+      # Mail (adjust as needed)
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-smtp}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-user}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-pass}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  uploads:

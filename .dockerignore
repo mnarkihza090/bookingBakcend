@@ -1,0 +1,21 @@
+# Maven
+target/
+.mvn/
+**/*.iml
+.idea/
+
+# Node/Front leftovers
+node_modules/
+
+# VCS
+.git
+.gitignore
+
+# Build context bloat
+uploads/
+*.log
+.DS_Store
+
+# Docker
+Dockerfile*
+**/.env
